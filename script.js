@@ -9,6 +9,22 @@ const {blogRoutes}=require('./controllers/blog')
 
 app.use(express.json())
 
+
+
+// Middleware to handle JSON parsing errors
+// Custom error handler for invalid JSON input in req.body
+app.use((err, req, res, next) => {
+    if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
+        return res.status(400).json({ error: "Invalid JSON format. Please check your request body." });
+    }
+    next(); // Pass to next middleware
+});
+
+
+
+
+
+
 app.use(cors())
 const port = process.env.PORT ||= 8000;
 
