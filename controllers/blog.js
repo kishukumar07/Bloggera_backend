@@ -3,8 +3,12 @@ const blogRoutes =express.Router()
 
 
 blogRoutes.get("/",()=>{
-    req.end("noteshere")
+    req.end("noteshere")    //testing 
 })
+
+
+
+
 
 
 

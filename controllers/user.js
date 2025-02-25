@@ -1,7 +1,7 @@
 const express = require('express')
 const userRoutes = express.Router()
 const { Usermodel } = require('../models/user')
-
+const bcrypt = require('bcrypt')
 
 
 userRoutes.post("/register", async (req, res) => {
@@ -19,12 +19,15 @@ userRoutes.post("/register", async (req, res) => {
             return res.status(409).json({ msg: "User already exists" });
         }
 
-        // Create new user
-        const user = new Usermodel(req.body);
-        await user.save();
+        //hashing password with bcrypt -sequrity feature  
+        bcrypt.hash(password, 5, async (err, hash) => {
+            // Store hash in your password DB.
+            // Create new user
+            const user = new Usermodel({ name, email, "password": hash, age, city });
+            await user.save();
+        });
 
-        
-        res.status(201).json({ msg: "User registered successfully!" });
+        res.status(201).json({ msg:"User registered successfully!" });
 
     } catch (err) {
         res.status(500).json({ msg: "Internal Server Error", error: err.message });
@@ -34,16 +37,18 @@ userRoutes.post("/register", async (req, res) => {
 
 
 
-userRoutes.post("/login", async (req, res) => {
 
-    const users = await Usermodel.find({})
-    res.send(users)
+
+
+
+
+userRoutes.post("/login", (req, res) => {
+    //logicwill be here 
+    res.send("login route ")
+
 
 })
 
-
-
-// userRoutes.POST()
 
 
 
