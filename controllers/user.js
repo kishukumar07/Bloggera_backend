@@ -14,7 +14,8 @@ userRoutes.post("/register", async (req, res) => {
         if (!email || !password || !name || !age || !city) {
             return res.status(400).json({ msg: "All fields are required: Name, Email, Password, Age, and City." });
         }
-
+       
+        
         const existingUser = await Usermodel.findOne({ email });
         if (existingUser) {
             return res.status(409).json({ msg: "User already exists." });
@@ -50,6 +51,13 @@ userRoutes.post("/login", async (req, res) => {
     // Finding the user with email
     const { email, password } = req.body;
 
+
+
+    if (!email || !password ) {
+        return res.status(400).json({ msg: "All fields are required: Name, Email, Password, Age, and City." });
+    }
+
+
     try {
         const user = await Usermodel.findOne({ email });
 
@@ -62,7 +70,7 @@ userRoutes.post("/login", async (req, res) => {
         bcrypt.compare(password, hashedPassword, (err, result) => { // Can also use this with await keyword, no need for a callback
             // result == true
             if (err) {
-                return res.status(500).json({ msg: "Internal server error." });
+                return res.status(500).json({ msg: "Internal server error" });
             }
 
             if (!result) {
@@ -70,8 +78,8 @@ userRoutes.post("/login", async (req, res) => {
             }
 
             // Returning response with token
-            const token = jwt.sign({ foo: 'bar' }, process.env.jwtSecretKey);
-            res.status(200).send("Login successful.");
+            const token = jwt.sign({authorID:user._id,name:user.name}, process.env.jwtSecretKey);   //have to complete this 
+            res.status(200).send({ 'msg': "Login Sucessful", "token": token });
 
         });
 
