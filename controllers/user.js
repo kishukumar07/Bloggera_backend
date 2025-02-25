@@ -4,40 +4,32 @@ const { Usermodel } = require('../models/user')
 
 
 
-
 userRoutes.post("/register", async (req, res) => {
-    const { email,password ,name ,age ,city } = req.body
+    try {
+        const { email, password, name, age, city } = req.body;
 
-    if (!email || !password || !name || !age || !city) {
-        return res.status(400).send({ msg: "All fields are required: name, email, password, age, and city." });
-    }
-    
-
-
-    try{
-        const users = await Usermodel.aggregate([{ $match: { email } }])  
-        if (users.length) {
-           return   res.status(409).json({ msg: "User already exists"});
+        // Check if all fields are provided
+        if (!email || !password || !name || !age || !city) {
+            return res.status(400).json({ msg: "All fields are required: name, email, password, age, and city." });
         }
 
+        // Check if user already exists
+        const existingUser = await Usermodel.findOne({ email });
+        if (existingUser) {
+            return res.status(409).json({ msg: "User already exists" });
+        }
 
-            try {
-                const user = new Usermodel(req.body)
-                await user.save();
-                res.status(200).json("user registered Sucessfull")
+        // Create new user
+        const user = new Usermodel(req.body);
+        await user.save();
 
-            } catch (err) {
-                res.status(400).send({ "msg": err.message })
-            }
-    }catch(err){
-        res.status(400).json({"msg": err.message })
+        
+        res.status(201).json({ msg: "User registered successfully!" });
+
+    } catch (err) {
+        res.status(500).json({ msg: "Internal Server Error", error: err.message });
     }
-    
-
-})
-
-
-
+});
 
 
 
