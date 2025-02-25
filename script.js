@@ -2,17 +2,21 @@ const express = require('express')
 const dotenv = require('dotenv');
 const connection = require('./db')
 const cors=require('cors')
+const userRouter=require('./controllers/user')
+
+
 
 dotenv.config();
 const app = express()
 
 app.use(express.json())
 app.use(cors())
-
-
-
 const port = process.env.PORT ||= 8000;
-// console.log(connection)
+
+
+
+
+app.use("/user",userRouter)
 
 
 
