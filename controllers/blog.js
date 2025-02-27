@@ -19,7 +19,6 @@ blogRoutes.post("/create", async (req, res) => {
 
 
 //  Function: Retrieves all blog posts while excluding authorID and _id from the response.
-
 blogRoutes.get("/", async(req, res) => {
 //no need for authorization 
 try{
@@ -29,13 +28,30 @@ try{
 }catch(err){
     res.status(500).json({ "msg": err.message}); // 500 
 }
-
 })
 
-blogRoutes.delete("/delete/:blogID", async (req, res) => {    
-const {blogID}=req.params
 
 
+
+// the delete route to allow only the author to delete the blog. 
+blogRoutes.delete("/delete/:blogID", async (req, res) => {   
+    
+const {blogID}=req.params 
+const authorID =req.body.authorID; // Authenticated User ID from token
+
+// Find the blog
+const blog = await Blogmodel.findById(blogID);
+if (!blog) return res.status(404).json({ "msg": "Blog not found" });
+
+
+// Ensure only the author can delete
+if (blog.authorID != authorID) {
+    return res.status(403).json({ "msg": "Unauthorized to delete this blog" });
+  }
+
+
+
+//   res.status(200).json({ "msg": "Blog deleted successfully" });
 
 
   });
