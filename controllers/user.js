@@ -78,7 +78,7 @@ userRoutes.post("/login", async (req, res) => {
             }
 
             // Returning response with token
-            const token = jwt.sign({authorID:user._id,name:user.name}, process.env.jwtSecretKey);   //have to complete this 
+            const token = jwt.sign({authorID:user._id,author:user.name}, process.env.jwtSecretKey);   //have to complete this 
             res.status(200).send({ 'msg': "Login Sucessful", "token": token });
 
         });

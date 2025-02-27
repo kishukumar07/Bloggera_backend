@@ -7,11 +7,6 @@ blogRoutes.get("/",()=>{
 })
 
 
-
-
-
-
-
 module.exports={
     blogRoutes
 }
