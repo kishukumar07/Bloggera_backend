@@ -23,8 +23,6 @@ const env = require('dotenv')
 env.config()
 
 
-
-
 auth = (req, res, next) => {
 
     const token = req.headers.authorization;
@@ -42,13 +40,10 @@ auth = (req, res, next) => {
         req.body.author = decodedToken.author;
         // console.log(req.body)
         next();
-
     } catch (err) {
         return res.status(403).json({ err: err.message })
     }
 }
-
-
 
 module.exports = {
     auth
