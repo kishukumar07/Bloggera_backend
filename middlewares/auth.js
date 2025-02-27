@@ -13,7 +13,7 @@
               //3. if token is decoded - we got it man dont u think the token is correct (bcs if the token were malformed it can not be decoded with that secret key right ?  )
               
               //4.under the condition of if decodedtoken is there we'll do all operations 
-              //operations like ....manupulating the requestbody with those payload data contains author information that will needed during blog creation  --then -->  next()
+              //operations like ....manupulating the requestbody with those payload data contains author information ( and from here from authentication part the req body always going to contain that information ) --then -->  next()
               
               //5. under else condition we send the res as please login ! ...bcs here token is not  decoded has a lot of mean either user is not logged in or token has malformed .... 
               
