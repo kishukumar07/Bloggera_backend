@@ -2,8 +2,8 @@ const express =require('express')
 const blogRoutes =express.Router()
 
 
-blogRoutes.get("/",()=>{
-    req.end("noteshere")    //testing 
+blogRoutes.get("/",(req,res)=>{
+    res.end("data fetched oky !")    //testing 
 })
 
 

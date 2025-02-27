@@ -6,6 +6,8 @@ const connection = require('./db')
 const cors=require('cors')
 const {userRoutes}=require('./controllers/user')
 const {blogRoutes}=require('./controllers/blog')
+const {auth} =require('./middlewares/auth')
+
 
 app.use(express.json())
 
@@ -34,6 +36,8 @@ const port = process.env.PORT ||= 8000;
 app.use("/user",userRoutes)
 
 //auth middle ware 
+app.use(auth)
+
 
 app.use("/blog",blogRoutes)
 
