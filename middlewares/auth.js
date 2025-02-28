@@ -19,19 +19,28 @@
 
 
 const jwt = require('jsonwebtoken');
-const env = require('dotenv')
+const env = require('dotenv');
+const { BlacklistModel } = require('../models/blacklist');
 env.config()
 
 
-auth = (req, res, next) => {
-
-    const token = req.headers.authorization;
-    // console.log(token)
-    if (!token) {
-        return res.status(401).json({ "msg":"Access Denied! Please log in." })
-    }
+auth = async (req, res, next) => {
 
     try {
+
+        const token = req.headers.authorization;
+
+        // console.log(token)
+        if (!token) {
+            return res.status(401).json({ "msg": "Access Denied! Please log in." })
+        }
+        // Checking for blacklisted token
+        const isBlacklisted = await BlacklistModel.findOne({ token });
+
+        if (isBlacklisted) {
+            return res.status(401).send('Token is blacklisted !please Login First');
+        }
+
         const decodedToken = jwt.verify(token, process.env.jwtSecretKey);
         // console.log(process.env.jwtSecretKey)
         // console.log(decodedToken); 
