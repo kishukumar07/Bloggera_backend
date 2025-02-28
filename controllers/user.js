@@ -3,9 +3,9 @@ const userRoutes = express.Router();
 const { Usermodel } = require('../models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const dotenv=require('dotenv'); 
+const dotenv = require('dotenv');
 dotenv.config()
-
+const { BlacklistModel } = require('../models/blacklist')
 
 userRoutes.post("/register", async (req, res) => {
     try {
@@ -14,8 +14,8 @@ userRoutes.post("/register", async (req, res) => {
         if (!email || !password || !name || !age || !city) {
             return res.status(400).json({ msg: "All fields are required: Name, Email, Password, Age, and City." });
         }
-       
-        
+
+
         const existingUser = await Usermodel.findOne({ email });
         if (existingUser) {
             return res.status(409).json({ msg: "User already exists." });
@@ -53,7 +53,7 @@ userRoutes.post("/login", async (req, res) => {
 
 
 
-    if (!email || !password ) {
+    if (!email || !password) {
         return res.status(400).json({ msg: "All fields are required: Name, Email, Password, Age, and City." });
     }
 
@@ -78,7 +78,7 @@ userRoutes.post("/login", async (req, res) => {
             }
 
             // Returning response with token
-            const token = jwt.sign({authorID:user._id,author:user.name}, process.env.jwtSecretKey);   //have to complete this 
+            const token = jwt.sign({ authorID: user._id, author: user.name }, process.env.jwtSecretKey);   //have to complete this 
             res.status(200).send({ 'msg': "Login Sucessful", "token": token });
 
         });
@@ -87,6 +87,29 @@ userRoutes.post("/login", async (req, res) => {
         res.status(500).json({ msg: err.message });
     }
 });
+
+
+
+
+// Logout user and blacklist token
+userRoutes.post("/logout", async (req, res) => {
+    try {
+        const token = req.headers.authorization;
+        const BlacklistedToken = new BlacklistModel({ token });
+        await BlacklistedToken.save();
+        res.status(200).send('Logged out successfully');
+   } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+    }
+});
+
+
+
+
+
+
+
 
 module.exports = {
     userRoutes
