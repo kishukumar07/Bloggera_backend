@@ -80,7 +80,7 @@ userRoutes.post("/login", async (req, res) => {
             const token = jwt.sign({ authorID: user._id, author: user.name },
                 process.env.jwtSecretKey,
                 { expiresIn: '1h' });
-                
+
                 // Create refresh token
             const reftoken = jwt.sign({ authorID: user._id, author: user.name },
                 process.env.REF_SECRET, {
@@ -112,6 +112,32 @@ userRoutes.post("/logout", async (req, res) => {
         res.status(500).send('Server error');
     }
 });
+
+
+
+//for ref token purpose  
+userRoutes.post('/refresh', async(req, res) => {
+    const refreshToken = req.body.reftoken;
+    // Verify refresh token
+    try {
+      const decoded = jwt.verify(refreshToken,process.env.REF_SECRET);  //decoding the reftoken
+      
+      authorID = decoded.authorID;
+    
+      const user = await Usermodel.findOne({authorID}); 
+      if (!user) return res.status(401).send('Unauthorized login Again');
+      
+      // Generate new access token
+      const token = jwt.sign({ authorID: user._id, author: user.name },
+        process.env.jwtSecretKey,
+        { expiresIn: '1h' });
+      // Return new access token to client
+      res.json({ token });
+    } catch (err) {
+      res.status(401).send('Unauthorized 2');
+    }
+   });
+
 
 
 

@@ -35,6 +35,10 @@ const port = process.env.PORT ||= 8000;
 
 app.use("/user",userRoutes)
 
+
+
+
+
 //auth middle ware 
 app.use(auth)
 
