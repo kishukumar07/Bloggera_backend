@@ -80,12 +80,13 @@ userRoutes.post("/login", async (req, res) => {
             const token = jwt.sign({ authorID: user._id, author: user.name },
                 process.env.jwtSecretKey,
                 { expiresIn: '1h' });
-            
+                
                 // Create refresh token
             const reftoken = jwt.sign({ authorID: user._id, author: user.name },
                 process.env.REF_SECRET, {
                     expiresIn: '7h'
             });
+
 
             res.status(200).json({ 'msg': "Login Sucessful", token  ,reftoken });
 

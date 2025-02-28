@@ -50,6 +50,11 @@ auth = async (req, res, next) => {
         // console.log(req.body)
         next();
     } catch (err) {
+
+        if (err.name === 'TokenExpiredError') {  
+            return res.status(401).send('Access token expired');
+            }
+
         return res.status(403).json({ err: err.message })
     }
 }
