@@ -51,8 +51,6 @@ userRoutes.post("/login", async (req, res) => {
     // Finding the user with email
     const { email, password } = req.body;
 
-
-
     if (!email || !password) {
         return res.status(400).json({ msg: "All fields are required: Name, Email, Password, Age, and City." });
     }
@@ -78,8 +76,18 @@ userRoutes.post("/login", async (req, res) => {
             }
 
             // Returning response with token
-            const token = jwt.sign({ authorID: user._id, author: user.name }, process.env.jwtSecretKey);   //have to complete this 
-            res.status(200).send({ 'msg': "Login Sucessful", "token": token });
+
+            const token = jwt.sign({ authorID: user._id, author: user.name },
+                process.env.jwtSecretKey,
+                { expiresIn: '1h' });
+            
+                // Create refresh token
+            const reftoken = jwt.sign({ authorID: user._id, author: user.name },
+                process.env.REF_SECRET, {
+                    expiresIn: '7h'
+            });
+
+            res.status(200).json({ 'msg': "Login Sucessful", token  ,reftoken });
 
         });
 
@@ -98,9 +106,9 @@ userRoutes.post("/logout", async (req, res) => {
         const BlacklistedToken = new BlacklistModel({ token });
         await BlacklistedToken.save();
         res.status(200).send('Logged out successfully');
-   } catch (err) {
-    console.error(err);
-    res.status(500).send('Server error');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server error');
     }
 });
 
