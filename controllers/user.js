@@ -144,27 +144,31 @@ userRoutes.post('/refresh', async (req, res) => {
 
 
 
-//redirected to this  after o-auth 
+// //redirected to this  after o-auth 
 userRoutes.get("/auth/github", async (req, res, next) => {
     const {code} = req.query
+    console.log("OAuth Code:", code);
+
     //step2 
-    const {data:{acess_token}} = await axios.post('https://github.com/login/oauth/access_token', {
-        client_id: process.env.CLIENT_ID,
-        client_secret: process.env.CLIENT_SECRET,
-        code
-    },{
-        headers :{
-            Accept :'application/json'  //without this the data will not come in the json format 
+    const { data: { access_token } } = await axios.post(
+        'https://github.com/login/oauth/access_token',
+        {
+            client_id: process.env.CLIENT_ID,
+            client_secret: process.env.CLIENT_SECRET,
+            code
+        },
+        {
+            headers: { Accept: 'application/json' }
         }
-    })
- 
+    );
+    
    //step3.
-const user =await axios.get('https://api.github.com/user',{
+const user =await axios.get('https://api.github.com/user/email',{
  headers:{
-    "Authorization": `Bearer ${acess_token}`
+    "Authorization": `Bearer ${access_token}`
  }  
 })
-console.log(JSON.stringify(user.data))
+console.log(user)
 }); 
 
 
