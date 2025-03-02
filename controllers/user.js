@@ -140,6 +140,21 @@ userRoutes.post('/refresh', async(req, res) => {
 
 
 
+//profile where user redirected after authentication ..... 
+
+
+userRoutes.get("/profile",async(req,res,next)=>{
+
+// const { token } =req.headers;
+// const decodedData =jwt.verify(token, "abrakadabra"); 
+// const user =await User.find({email: decodedData.email}); 
+console.log(1)
+res.end("yes")
+} )
+
+
+
+
 
 
 
