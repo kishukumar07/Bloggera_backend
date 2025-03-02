@@ -118,7 +118,7 @@ userRoutes.post("/logout", async (req, res) => {
 
 
 
-//for ref token purpose  
+//for ref token purpose  -using ref token we;ll generate new acesstoken 
 userRoutes.post('/refresh', async (req, res) => {
     const refreshToken = req.body.reftoken;
     // Verify refresh token
@@ -147,14 +147,25 @@ userRoutes.post('/refresh', async (req, res) => {
 //redirected to this  after o-auth 
 userRoutes.get("/auth/github", async (req, res, next) => {
     const {code} = req.query
-    const response = await axios.post('https://github.com/login/oauth/access_token', {
+    //step2 
+    const {data:{acess_token}} = await axios.post('https://github.com/login/oauth/access_token', {
         client_id: process.env.CLIENT_ID,
         client_secret: process.env.CLIENT_SECRET,
         code
+    },{
+        headers :{
+            Accept :'application/json'  //without this the data will not come in the json format 
+        }
     })
  
-console.log(JSON.stringify(response.data))
+   //step3.
+const user =await axios.get('https://api.github.com/user',{
+ headers:{
+    "Authorization": `Bearer ${acess_token}`
+ }  
 })
+console.log(JSON.stringify(user.data))
+}); 
 
 
 
