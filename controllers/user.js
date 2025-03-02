@@ -6,6 +6,9 @@ const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 dotenv.config()
 const { BlacklistModel } = require('../models/blacklist')
+const axios = require('axios')
+
+
 
 userRoutes.post("/register", async (req, res) => {
     try {
@@ -81,14 +84,14 @@ userRoutes.post("/login", async (req, res) => {
                 process.env.jwtSecretKey,
                 { expiresIn: '1h' });
 
-                // Create refresh token
+            // Create refresh token
             const reftoken = jwt.sign({ authorID: user._id, author: user.name },
                 process.env.REF_SECRET, {
-                    expiresIn: '7h'
+                expiresIn: '7h'
             });
 
 
-            res.status(200).json({ 'msg': "Login Sucessful", token  ,reftoken });
+            res.status(200).json({ 'msg': "Login Sucessful", token, reftoken });
 
         });
 
@@ -116,41 +119,42 @@ userRoutes.post("/logout", async (req, res) => {
 
 
 //for ref token purpose  
-userRoutes.post('/refresh', async(req, res) => {
+userRoutes.post('/refresh', async (req, res) => {
     const refreshToken = req.body.reftoken;
     // Verify refresh token
     try {
-      const decoded = jwt.verify(refreshToken,process.env.REF_SECRET);  //decoding the reftoken
-      
-      authorID = decoded.authorID;
-    
-      const user = await Usermodel.findOne({authorID}); 
-      if (!user) return res.status(401).send('Unauthorized login Again');
-      
-      // Generate new access token
-      const token = jwt.sign({ authorID: user._id, author: user.name },
-        process.env.jwtSecretKey,
-        { expiresIn: '1h' });
-      // Return new access token to client
-      res.json({ token });
+        const decoded = jwt.verify(refreshToken, process.env.REF_SECRET);  //decoding the reftoken
+
+        authorID = decoded.authorID;
+
+        const user = await Usermodel.findOne({ authorID });
+        if (!user) return res.status(401).send('Unauthorized login Again');
+
+        // Generate new access token
+        const token = jwt.sign({ authorID: user._id, author: user.name },
+            process.env.jwtSecretKey,
+            { expiresIn: '1h' });
+        // Return new access token to client
+        res.json({ token });
     } catch (err) {
-      res.status(401).send('Unauthorized 2');
+        res.status(401).send('Unauthorized 2');
     }
-   });
+});
 
 
 
-//profile where user redirected after authentication ..... 
 
-
-userRoutes.get("/profile",async(req,res,next)=>{
-
-// const { token } =req.headers;
-// const decodedData =jwt.verify(token, "abrakadabra"); 
-// const user =await User.find({email: decodedData.email}); 
-console.log(1)
-res.end("yes")
-} )
+//redirected to this  after o-auth 
+userRoutes.get("/auth/github", async (req, res, next) => {
+    const {code} = req.query
+    const response = await axios.post('https://github.com/login/oauth/access_token', {
+        client_id: process.env.CLIENT_ID,
+        client_secret: process.env.CLIENT_SECRET,
+        code
+    })
+ 
+console.log(JSON.stringify(response.data))
+})
 
 
 
