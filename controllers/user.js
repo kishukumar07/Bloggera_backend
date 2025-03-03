@@ -147,43 +147,44 @@ userRoutes.post('/refresh', async (req, res) => {
 // //redirected to this  after o-auth 
 userRoutes.get("/auth/github", async (req, res, next) => {
 
+    try {
+        const { code } = req.query
+        // console.log("OAuth Code:", code);
+
+        //step2 
+        const { data: { access_token } } = await axios.post(
+            'https://github.com/login/oauth/access_token',
+            {
+                client_id: process.env.CLIENT_ID,
+                client_secret: process.env.CLIENT_SECRET,
+                code
+            },
+            {
+                headers: { Accept: 'application/json' }
+            }
+        );
+
+        //step3.
+        const { data } = await axios.get('https://api.github.com/user/emails', {
+            headers: {
+                "Authorization": `Bearer ${access_token}`
+            }
+        })
+
+        // Extract first email (assuming the first one is the primary email)
+        const email = data.length > 0 ? data[0].email : null;
+
+        console.log(email)  //have to generate jwt using that email and send it as response ..... so that user can use that token to auth for next time ......... 
+
+        var token = jwt.sign({email}, process.env.jwtSecretKey);
+       
+        res.status(401).json({token}) //if client will use this token for auth .. they will have acess to protect route as well ...without regestering as well 
 
 
+    } catch (err) {
+        res.status(400).json({ "msg": err })
+    }
 
-
-
-    const { code } = req.query
-    // console.log("OAuth Code:", code);
-
-    //step2 
-    const { data: { access_token } } = await axios.post(
-        'https://github.com/login/oauth/access_token',
-        {
-            client_id: process.env.CLIENT_ID,
-            client_secret: process.env.CLIENT_SECRET,
-            code
-        },
-        {
-            headers: { Accept: 'application/json' }
-        }
-    );
-
-    //step3.
-    const { data } = await axios.get('https://api.github.com/user/emails', {
-        headers: {
-            "Authorization": `Bearer ${access_token}`
-        }
-    })
-
-
-    // Extract first email (assuming the first one is the primary email)
-    const email = data.length > 0 ? data[0].email : null;
-
-    console.log(email)  //have to generate jwt using that email and send it as response ..... so that user can use that token to auth for next time ......... 
-
-
-
-    
 });
 
 
