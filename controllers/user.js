@@ -147,7 +147,7 @@ userRoutes.post('/refresh', async (req, res) => {
 // //redirected to this  after o-auth 
 userRoutes.get("/auth/github", async (req, res, next) => {
     const {code} = req.query
-    console.log("OAuth Code:", code);
+    // console.log("OAuth Code:", code);
 
     //step2 
     const { data: { access_token } } = await axios.post(
