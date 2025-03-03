@@ -103,7 +103,7 @@ userRoutes.post("/login", async (req, res) => {
 
 
 
-// Logout user and blacklist token
+//Logout user and blacklist token
 userRoutes.post("/logout", async (req, res) => {
     try {
         const token = req.headers.authorization;
@@ -146,7 +146,13 @@ userRoutes.post('/refresh', async (req, res) => {
 
 // //redirected to this  after o-auth 
 userRoutes.get("/auth/github", async (req, res, next) => {
-    const {code} = req.query
+
+
+
+
+
+
+    const { code } = req.query
     // console.log("OAuth Code:", code);
 
     //step2 
@@ -161,16 +167,24 @@ userRoutes.get("/auth/github", async (req, res, next) => {
             headers: { Accept: 'application/json' }
         }
     );
-    
-   //step3.
-const {data :emails} =await axios.get('https://api.github.com/user/emails',{
- headers:{
-    "Authorization": `Bearer ${access_token}`
- }  
-})   
 
-console.log(emails)  //have to generate jwt using that email and send it as response ..... so that user can use that token to auth for next time ......... 
-}); 
+    //step3.
+    const { data } = await axios.get('https://api.github.com/user/emails', {
+        headers: {
+            "Authorization": `Bearer ${access_token}`
+        }
+    })
+
+
+    // Extract first email (assuming the first one is the primary email)
+    const email = data.length > 0 ? data[0].email : null;
+
+    console.log(email)  //have to generate jwt using that email and send it as response ..... so that user can use that token to auth for next time ......... 
+
+
+
+    
+});
 
 
 
