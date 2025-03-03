@@ -163,11 +163,12 @@ userRoutes.get("/auth/github", async (req, res, next) => {
     );
     
    //step3.
-const user =await axios.get('https://api.github.com/user/email',{
+const user =await axios.get('https://api.github.com/user/emails',{
  headers:{
     "Authorization": `Bearer ${access_token}`
  }  
-})
+})   
+
 console.log(user)
 }); 
 
