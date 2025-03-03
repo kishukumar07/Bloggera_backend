@@ -169,7 +169,7 @@ const {data :emails} =await axios.get('https://api.github.com/user/emails',{
  }  
 })   
 
-console.log(emails)
+console.log(emails)  //have to generate jwt using that email and send it as response ..... so that user can use that token to auth for next time ......... 
 }); 
 
 
