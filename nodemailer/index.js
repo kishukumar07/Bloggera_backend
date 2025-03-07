@@ -1,6 +1,14 @@
-const nodemailer =require('nodemailer'); 
-const env =require('dotenv'); 
-env.config()
+
+import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
+
+dotenv.config(); // Load environment variables from a .env file
+
+
+console.log("Email:", process.env.USER_EMAIL);
+console.log("Password:", process.env.PASS);
+
+
 
 //creating the transpoter 
 const transporter = nodemailer.createTransport({
@@ -14,15 +22,29 @@ const transporter = nodemailer.createTransport({
   });
 
 
-// async function main() {
+async function main() {
     // send mail with defined transport object
-    const info = await transporter.sendMail({
-      from: 'lovishnik@gmail.com', // sender address
-      to: "kishukumars082@gmail.com", // list of receivers
-      subject: "Hello ✔", // Subject line
-      text: "Hello world?", // plain text body
-      html: "<b>Hello world?</b>", // html body
-    });
-    console.log("Message sent: %s", info.messageId);
-    // Message sent: <d786aa62-4e0a-070a-47ed-0b0666549519@ethereal.email>
-//   }
+    try{
+        const info = await transporter.sendMail({
+            from: process.env.USER_EMAIL, // sender address
+            to: "kishukumars082@gmail.com", // list of receivers
+            subject: "Testing mail", // Subject line
+            text: "Hello this is a test mail from niket ", // plain text body
+          //   html: "<b>Hello world?</b>", // html body
+          });
+          console.log("Message sent: %s", info.messageId);
+    }catch(err){
+        console.log(err); 
+    }
+}
+      
+main();      
+
+
+    
+//if we want to send emails via gmail in bulk it have rate limetter and we can't able to send that ...so things completely changed ....
+//eg .100 email in one way (gmail reate limit of sending emails ... =>> only till 500 in a day)
+
+
+
+

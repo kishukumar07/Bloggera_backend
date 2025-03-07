@@ -2,6 +2,7 @@
   "name": "006.oauth",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "server": "nodemon script"
@@ -17,6 +18,9 @@
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "mongoosh": "^0.0.7",
+    "nodemailer": "^6.10.0",
     "nodemon": "^3.1.9"
   }
+  
+  
 }
