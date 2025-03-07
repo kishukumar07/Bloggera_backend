@@ -179,20 +179,12 @@ userRoutes.get("/auth/github", async (req, res, next) => {
         var token = jwt.sign({email}, process.env.jwtSecretKey);
        
         res.status(401).json({token}) //if client will use this token for auth .. they will have acess to protect route as well ...without regestering as well 
-
-
+        
     } catch (err) {
         res.status(400).json({ "msg": err })
     }
 
 });
-
-
-
-
-
-
-
 
 
 
