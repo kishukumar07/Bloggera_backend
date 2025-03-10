@@ -41,10 +41,9 @@ async function main() {
 main();      
 
 
-    
+
 //if we want to send emails via gmail in bulk it have rate limetter and we can't able to send that ...so things completely changed ....
 //eg .100 email in one way (gmail reate limit of sending emails ... =>> only till 500 in a day)
-
 
 
 

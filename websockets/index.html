@@ -12,7 +12,10 @@
 
 
     <script>
-        const socket =new WebSocket('ws://localhost:9000')
+        const socket =new WebSocket('ws://localhost:9000') //as soon as the code will run the connection is esablished
+        socket.onopen =() =>{
+            console.log("connection established"); 
+        }
     </script>
  </body>
  </html>

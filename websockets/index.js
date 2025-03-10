@@ -1,7 +1,8 @@
 //server side code....
-const websocket = require('ws');
+import { WebSocketServer } from 'ws';
 
-const wsServer = new websocket.WebSocketServer({ port: 9000 }) //created a websocket server..
+
+const wsServer = new WebSocketServer({ port: 9000 }) //created a websocket server..
 
 wsServer.on('connection', (socket) => {
     console.log(socket)//the details of client 
