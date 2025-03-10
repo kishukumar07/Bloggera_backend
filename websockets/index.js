@@ -12,5 +12,13 @@ wsServer.on('connection', (socket) => {
         console.log(msg.toString()); //will print the msg in buffer format ...
     });
 
-    socket.send('hey im server') //sending msg from server to client 
+    socket.send('hey im server') //sending msg from server to client   
+    //can send the msg using interval setInterval 
+
+// setInterval(()=>{
+//     socket.send('hey im server'); 
+// },1000) //1 sec    
+
+
+
 })
