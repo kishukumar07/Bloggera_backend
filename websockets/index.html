@@ -10,12 +10,8 @@
 
 <body>
 
-
     <input type="text" id="msg">
     <button onclick="sendmsg()">Send Msg</button>
-
-
-
 
     <script>
         const socket = new WebSocket('ws://localhost:9000') //as soon as the code will run the connection is esablished
@@ -26,14 +22,10 @@
             //  socket.send('Hello i am your client'); 
         }
 
-
-
 //for reciving the msg by server 
    socket.onmessage = (e) =>{
     console.log(e.data);
    }
-
-
 
       const  sendmsg = () => {
             const msg = document.getElementById('msg').value;
