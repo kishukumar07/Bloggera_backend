@@ -50,6 +50,8 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         room[roomName] -= 1
         console.log("User disconnected");
+
+        io.sockets.in(`${roomName}`).emit('userCount',`Total users : ${room[roomName]}`) 
     })  //if we refresh the client ui its get disconnected and then get connected again....
 
     socket.send(`You are in ${roomName} & Total users  ${room[roomName]} `);  //ammiting it to every particular room 
@@ -57,8 +59,6 @@ io.on('connection', (socket) => {
     io.sockets.in(`${roomName}`).emit('userCount',`Total users : ${room[roomName]}`) 
    
 });
-
-
 
 
 httpServer.listen(3000, () => {
