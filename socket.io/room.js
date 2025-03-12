@@ -1,4 +1,7 @@
 // for removing two diff end points problem with that  NameSpace ..... 
+//index.html for this one 
+
+
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
@@ -33,26 +36,29 @@ const io = new Server(httpServer);
 
 
 //creating three different rooms...
-const rooms =[ {"Room 1":0 } ,{"Room 2":0 },{"Room 3":0 }];  
+const rooms = [{ "Room 1": 0 }, { "Room 2": 0 }, { "Room 3": 0 }];
 
 io.on('connection', (socket) => {
     console.log('User connected');
 
-const room =rooms[Math.floor( Math.random() * 3)] //random index of arr 0 to 2
+    const room = rooms[Math.floor(Math.random() * 3)] //random index of arr 0 to 2
 
-const roomName =Object.keys(room)[0]   
+    const roomName = Object.keys(room)[0]
 
-socket.join(roomName);   
-        room[roomName] += 1 
-    socket.on('disconnect',() => {
+    socket.join(roomName);
+    room[roomName] += 1
+    socket.on('disconnect', () => {
         room[roomName] -= 1
         console.log("User disconnected");
     })  //if we refresh the client ui its get disconnected and then get connected again....
 
     socket.send(`You are in ${roomName} & Total users  ${room[roomName]} `);  //ammiting it to every particular room 
 
-io.sockets.in('Room 3').emit('room 3',`Congratulations ...You are in ${roomName}`) //we can ammit it to a particular room ! yep  this msg is only come when the client will join only room 3
+    io.sockets.in(`${roomName}`).emit('userCount',`Total users : ${room[roomName]}`) 
+   
 });
+
+
 
 
 httpServer.listen(3000, () => {
@@ -60,4 +66,3 @@ httpServer.listen(3000, () => {
 });
 
 
- 
