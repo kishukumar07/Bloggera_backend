@@ -23,8 +23,8 @@ group1NS.on('connection', (socket) => {
     })  //if we refresh the client ui its get disconnected and then get connected again....
 
     socket.send("Welcome to my world!");
-    socket.emit("newEvent", "This is a new Event "); //this is how we can create custom events as well ....
-
+    // socket.emit("newEvent", "This is a new Event "); //this is how we can create custom events as well ....
+   socket.emit("group1Event","You are in group1") //sending group one event 
 });
 
 group2NS.on('connection', (socket) => {
@@ -35,8 +35,9 @@ group2NS.on('connection', (socket) => {
     })  //if we refresh the client ui its get disconnected and then get connected again....
 
     socket.send("Welcome to my world!");
-    socket.emit("newEvent", "This is a new Event "); //this is how we can create custom events as well ....
+    // socket.emit("newEvent", "This is a new Event "); //this is how we can create custom events as well ....
 
+    socket.emit("group2Event", "You are in group2") //sending group2  event 
 });
 
 
