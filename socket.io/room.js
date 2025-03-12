@@ -54,7 +54,7 @@ io.on('connection', (socket) => {
         io.sockets.in(`${roomName}`).emit('userCount',`Total users : ${room[roomName]}`) 
     })  //if we refresh the client ui its get disconnected and then get connected again....
 
-    socket.send(`You are in ${roomName} & Total users  ${room[roomName]} `);  //ammiting it to every particular room 
+    socket.send(`You are in ${roomName}`);  //ammiting it to every particular room 
 
     io.sockets.in(`${roomName}`).emit('userCount',`Total users : ${room[roomName]}`) 
    

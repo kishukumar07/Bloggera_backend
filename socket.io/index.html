@@ -10,19 +10,31 @@
     <!-- //so we can use io directly in below in script tag -->
 </head>
 <body>
+
+
+
+<h1 id="room">Joining room.....</h1>
+<h2 id="userCount">Total User.....</h2>
+
+
 <script>
         const socket = io('http://localhost:3000', { transports: ["websocket"] }) //here i have said that connect with localhost 3000 and type is webSocket....
 
         socket.on('message', (msg) => {
             console.log(msg);
+
+            document.getElementById('room').innerText = msg //will tell which room u are  
+
+
         })  //reciever executable when event happens
 
         socket.on('room 3', (msg) => {
             console.log(msg);
+           
         }) //recieving the broadcast msg with that event ....
 
         socket.on('userCount',(m)=>{
-            console.log(m); 
+            document.getElementById('userCount').innerText = m
         })
       
     </script>
