@@ -12,7 +12,6 @@ const httpServer = createServer(app);
 const io = new Server(httpServer);
 
 
-const group1NS =io.of('/group1')//this is the first name space  now instead of io we'll use groupname-group1NS
 const group2NS =io.of('/group2')//simlarly for 2nd group (group2NameSpace)
 
 group1NS.on('connection', (socket) => {
@@ -39,7 +38,6 @@ group2NS.on('connection', (socket) => {
 
     socket.emit("group2Event", "You are in group2") //sending group2  event 
 });
-
 
 
 
