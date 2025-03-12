@@ -23,9 +23,14 @@ socket.join(room)
         console.log("User disconnected");
     })  //if we refresh the client ui its get disconnected and then get connected again....
 
-    // socket.send(`You are in ${room}`);  
-    // socket.send(`You are in ${room}`);  
-   
+    // socket.send(`You are in ${room}`);  //ammiting it to every particular room 
+
+
+io.sockets.in('Room 3').emit('room 3',`Congratulations ...You are in ${room}`) //we can ammit it to a particular room ! yep  this msg is only come when the client will join only room 3
+
+
+
+
 });
 
 
