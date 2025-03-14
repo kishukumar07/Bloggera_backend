@@ -15,8 +15,8 @@ import { connection } from "./db.js";
 
 
 // //for swagger purpose
-// const  swaggerJSdoc =require('swagger-jsdoc'); 
-// const swaggerUi = require("swagger-ui-express"); 
+import swaggerJSDoc from 'swagger-jsdoc';
+import swaggerUI from 'swagger-ui-express';
 
 
 
@@ -44,28 +44,32 @@ const port = process.env.PORT ||= 8000;
 
 
 
-
-//swagger part below 
-// app.js
-import swaggerJSDoc from 'swagger-jsdoc';
-
+// Swagger Configuration
 const swaggerDefinition = {
-  openapi: '3.0.0',
-  info: {
-    title: 'Express API for JSONPlaceholder',
-    version: '1.0.0',
-  },
-};
-
-const options = {
-  swaggerDefinition,
-  // Paths to files containing OpenAPI definitions
-  apis: ['./routes/*.js'],
-};
-
-const swaggerSpec = swaggerJSDoc(options);
-
-//swagger part above  
+    openapi: '3.0.0',
+    info: {
+      title: 'Blog API Documentation',
+      version: '1.0.0',
+      description: 'API documentation for Blog application',
+    },
+    servers: [
+      {
+        url: `http://localhost:${process.env.PORT || 8000}`,
+        description: 'Development server',
+      },
+    ],
+  };
+  
+  const options = {
+    swaggerDefinition,
+    apis: ['./controllers/*.js'], // Point to your route files
+  };
+  
+  const swaggerSpec = swaggerJSDoc(options);
+  
+  // Swagger UI endpoint
+  app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
+  
 
 
 
@@ -73,7 +77,7 @@ app.use("/user",userRoutes)
 
 
 //auth middle ware 
-app.use(auth)
+// app.use(auth)
 
 
 app.use("/blog",blogRoutes)

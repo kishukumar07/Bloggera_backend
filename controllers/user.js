@@ -12,6 +12,56 @@ const userRoutes = express.Router();
 
 
 
+/**
+ * @swagger
+ * /user/register:
+ *   post:
+ *     summary: Register a new user
+ *     description: Creates a new user account. All fields (Name, Email, Password, Age, and City) are required.
+ *     tags:
+ *       - Users
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - email
+ *               - password
+ *               - age
+ *               - city
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: User's full name
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: User's email address
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 description: User's password
+ *               age:
+ *                 type: number
+ *                 description: User's age
+ *               city:
+ *                 type: string
+ *                 description: User's city
+ *     responses:
+ *       201:
+ *         description: User registered successfully
+ *       400:
+ *         description: Missing required fields
+ *       409:
+ *         description: User already exists
+ *       500:
+ *         description: Internal server error
+ */
+
+
 userRoutes.post("/register", async (req, res) => {
     try {
         const { email, password, name, age, city } = req.body;
@@ -34,7 +84,7 @@ userRoutes.post("/register", async (req, res) => {
 
                 const user = new Usermodel({ name, email, "password": hash, age, city });
                 await user.save();
-
+                
                 res.status(201).json({ msg: "User registered successfully!" });
 
             } catch (err) {
@@ -42,24 +92,74 @@ userRoutes.post("/register", async (req, res) => {
                 res.status(500).json({ msg: "Internal server error.", error: err.message });
             }
         });
-
+        
     } catch (err) {
-
+        
         res.status(500).json({ msg: "Internal server error.", error: err.message });
     }
 });
 
 
 
+/**
+ * @swagger
+ * /user/login:
+ *   post:
+ *     summary: Login user
+ *     description: Authenticates a user and returns JWT tokens
+ *     tags:
+ *       - Users
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: User's email address
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 description: User's password
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: Login Successful
+ *                 token:
+ *                   type: string
+ *                   description: JWT access token
+ *                 reftoken:
+ *                   type: string
+ *                   description: JWT refresh token
+ *       400:
+ *         description: Missing credentials
+ *       401:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Internal server error
+ */
 
 userRoutes.post("/login", async (req, res) => {
     // Finding the user with email
     const { email, password } = req.body;
-
+    
     if (!email || !password) {
         return res.status(400).json({ msg: "All fields are required: Name, Email, Password, Age, and City." });
     }
-
+    
 
     try {
         const user = await Usermodel.findOne({ email });
@@ -104,7 +204,22 @@ userRoutes.post("/login", async (req, res) => {
 
 
 
-
+/**
+ * @swagger
+ * /user/logout:
+ *   post:
+ *     summary: Logout user
+ *     description: Blacklists the current JWT token
+ *     tags:
+ *       - Users
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Logged out successfully
+ *       500:
+ *         description: Server error
+ */
 //Logout user and blacklist token
 userRoutes.post("/logout", async (req, res) => {
     try {
@@ -118,6 +233,40 @@ userRoutes.post("/logout", async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /user/refresh:
+ *   post:
+ *     summary: Refresh access token
+ *     description: Generate new access token using refresh token
+ *     tags:
+ *       - Users
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - reftoken
+ *             properties:
+ *               reftoken:
+ *                 type: string
+ *                 description: Refresh token received during login
+ *     responses:
+ *       200:
+ *         description: New access token generated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   description: New JWT access token
+ *       401:
+ *         description: Unauthorized or invalid refresh token
+ */
 
 
 //for ref token purpose  -using ref token we;ll generate new acesstoken 
@@ -143,6 +292,48 @@ userRoutes.post('/refresh', async (req, res) => {
     }
 });
 
+
+
+
+
+/**
+ * @swagger
+ * /user/auth/github:
+ *   get:
+ *     summary: GitHub OAuth Authentication
+ *     description: Handles GitHub OAuth callback and returns JWT token
+ *     tags:
+ *       - OAuth
+ *     parameters:
+ *       - in: query
+ *         name: code
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: GitHub OAuth code
+ *     responses:
+ *       200:
+ *         description: Authentication successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   description: JWT access token
+ *       400:
+ *         description: OAuth error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   description: Error message
+ *     security: []
+ */
 
 
 
