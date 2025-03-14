@@ -1,6 +1,4 @@
-const { TokenExpiredError } = require('jsonwebtoken')
-const mongoose = require('mongoose')
-
+import mongoose from 'mongoose';
 
 const BlacklistSchema = mongoose.Schema({
     token: {
@@ -10,10 +8,12 @@ const BlacklistSchema = mongoose.Schema({
     },
 }); 
 
+export const BlacklistModel = mongoose.model("blacklist", BlacklistSchema);
 
-const BlacklistModel = mongoose.model("blacklist" ,BlacklistSchema)
 
+// Key changes made:
 
-module.exports={
-    BlacklistModel
-}
+// Replaced require with import
+// Changed module.exports to export const
+// Removed unused TokenExpiredError import
+// Modified to use ES modules export syntax

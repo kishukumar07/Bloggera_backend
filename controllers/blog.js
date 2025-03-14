@@ -1,7 +1,8 @@
-const express = require('express')
-const blogRoutes = express.Router()
-const mongoose = require('mongoose')
-const { Blogmodel } = require('../models/blog')
+import express from 'express';
+import mongoose from 'mongoose';
+import { Blogmodel } from '../models/blog.js';
+
+const blogRoutes = express.Router();
 
 
 //Function: Saves a new blog post to the database with relationships. 
@@ -99,7 +100,4 @@ blogRoutes.delete("/delete/:blogID", async (req, res) => {
 
 
 
-
-module.exports = {
-    blogRoutes
-}
+export { blogRoutes };

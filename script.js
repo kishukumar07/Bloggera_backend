@@ -1,12 +1,23 @@
-const express = require('express')
-const app = express()
-const dotenv = require('dotenv');
+
+import express from "express";
+import dotenv from "dotenv";
+import cors from "cors";
+const app = express();
 dotenv.config();
-const connection = require('./db')
-const cors=require('cors')
-const {userRoutes}=require('./controllers/user')
-const {blogRoutes}=require('./controllers/blog')
-const {auth} =require('./middlewares/auth')
+import { userRoutes } from "./controllers/user.js";
+import { blogRoutes } from "./controllers/blog.js";
+import { auth } from "./middlewares/auth.js";
+import { connection } from "./db.js";
+
+
+
+
+
+
+// //for swagger purpose
+// const  swaggerJSdoc =require('swagger-jsdoc'); 
+// const swaggerUi = require("swagger-ui-express"); 
+
 
 
 app.use(express.json())
@@ -33,10 +44,32 @@ const port = process.env.PORT ||= 8000;
 
 
 
+
+//swagger part below 
+// app.js
+import swaggerJSDoc from 'swagger-jsdoc';
+
+const swaggerDefinition = {
+  openapi: '3.0.0',
+  info: {
+    title: 'Express API for JSONPlaceholder',
+    version: '1.0.0',
+  },
+};
+
+const options = {
+  swaggerDefinition,
+  // Paths to files containing OpenAPI definitions
+  apis: ['./routes/*.js'],
+};
+
+const swaggerSpec = swaggerJSDoc(options);
+
+//swagger part above  
+
+
+
 app.use("/user",userRoutes)
-
-
-
 
 
 //auth middle ware 

@@ -1,12 +1,14 @@
-const express = require('express');
+import express from 'express';
+import { Usermodel } from '../models/user.js';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+import { BlacklistModel } from '../models/blacklist.js';
+import axios from 'axios';
+
+dotenv.config();
+
 const userRoutes = express.Router();
-const { Usermodel } = require('../models/user');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv');
-dotenv.config()
-const { BlacklistModel } = require('../models/blacklist')
-const axios = require('axios')
 
 
 
@@ -188,6 +190,4 @@ userRoutes.get("/auth/github", async (req, res, next) => {
 
 
 
-module.exports = {
-    userRoutes
-};
+export { userRoutes };
