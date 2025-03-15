@@ -5,6 +5,45 @@ import { Blogmodel } from '../models/blog.js';
 const blogRoutes = express.Router();
 
 
+
+/**
+ * @swagger
+ * /blog/create:
+ *   post:
+ *     summary: Create a new blog post
+ *     description: Creates a new blog post with author details from JWT token
+ *     tags:
+ *       - Blogs
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - title
+ *               - content
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 description: Blog post title
+ *               content:
+ *                 type: string
+ *                 description: Blog post content
+ *               category:
+ *                 type: string
+ *                 description: Blog category (optional)
+ *     responses:
+ *       201:
+ *         description: Blog posted successfully
+ *       500:
+ *         description: Internal server error
+ */
+
+
+
 //Function: Saves a new blog post to the database with relationships. 
 blogRoutes.post("/create", async (req, res) => {
     try {
@@ -19,6 +58,39 @@ blogRoutes.post("/create", async (req, res) => {
 
 
 
+/**
+ * @swagger
+ * /blog:
+ *   get:
+ *     summary: Get all blog posts
+ *     description: Retrieves all blog posts excluding authorID
+ *     tags:
+ *       - Blogs
+ *     responses:
+ *       200:
+ *         description: List of blog posts
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   title:
+ *                     type: string
+ *                   content:
+ *                     type: string
+ *                   author:
+ *                     type: string
+ *                   category:
+ *                     type: string
+ *                   date:
+ *                     type: string
+ *                     format: date-time
+ *       500:
+ *         description: Internal server error
+ */
+
 //  Function: Retrieves all blog posts while excluding authorID and _id from the response.
 blogRoutes.get("/", async (req, res) => {
     //no need for authorization 
@@ -31,7 +103,46 @@ blogRoutes.get("/", async (req, res) => {
     }
 })
 
-
+/**
+ * @swagger
+ * /blog/update/{blogID}:
+ *   patch:
+ *     summary: Update a blog post
+ *     description: Update a blog post (only by the author)
+ *     tags:
+ *       - Blogs
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: blogID
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the blog to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               content:
+ *                 type: string
+ *               category:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Blog updated successfully
+ *       403:
+ *         description: Unauthorized to update this blog
+ *       404:
+ *         description: Blog not found
+ *       500:
+ *         description: Internal server error
+ */
 
 
 //Function: the update route to allow only the author to update the blog. 
@@ -68,7 +179,33 @@ blogRoutes.patch("/update/:blogID", async (req, res) => {
 
 });
 
-
+/**
+ * @swagger
+ * /blog/delete/{blogID}:
+ *   delete:
+ *     summary: Delete a blog post
+ *     description: Delete a blog post (only by the author)
+ *     tags:
+ *       - Blogs
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: blogID
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the blog to delete
+ *     responses:
+ *       200:
+ *         description: Blog deleted successfully
+ *       403:
+ *         description: Unauthorized to delete this blog
+ *       404:
+ *         description: Blog not found
+ *       500:
+ *         description: Internal server error
+ */
 
 
 //Function: the delete route to allow only the author to delete the blog. 
