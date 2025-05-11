@@ -71,13 +71,15 @@ const swaggerDefinition = {
   app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
   
 
-
+app.get("/",(req,res)=>{
+  res.end("this is your Blog app")
+})
 
 app.use("/user",userRoutes)
 
 
 //auth middle ware 
-// app.use(auth)
+app.use(auth)
 
 
 app.use("/blog",blogRoutes)

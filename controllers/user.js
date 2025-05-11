@@ -157,7 +157,7 @@ userRoutes.post("/login", async (req, res) => {
     const { email, password } = req.body;
     
     if (!email || !password) {
-        return res.status(400).json({ msg: "All fields are required: Name, Email, Password, Age, and City." });
+        return res.status(400).json({ msg: "All fields are required: Email, Password" });
     }
     
 
