@@ -22,7 +22,7 @@ const blogRoutes = express.Router();
  *         application/json:
  *           schema:
  *             type: object
- *             required:
+ *             required:  
  *               - title
  *               - content
  *             properties:
@@ -212,6 +212,7 @@ blogRoutes.patch("/update/:blogID", async (req, res) => {
 blogRoutes.delete("/delete/:blogID", async (req, res) => {
     try {
         const { blogID } = req.params
+        // console.log(blogID);
         const authorID = req.body.authorID; // Authenticated User ID from token
 
         // Find the blog    

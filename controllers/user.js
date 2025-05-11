@@ -65,8 +65,9 @@ const userRoutes = express.Router();
 userRoutes.post("/register", async (req, res) => {
     try {
         const { email, password, name, age, city } = req.body;
-
+        console.log(email, password, name, age, city)
         if (!email || !password || !name || !age || !city) {
+
             return res.status(400).json({ msg: "All fields are required: Name, Email, Password, Age, and City." });
         }
 
@@ -84,7 +85,7 @@ userRoutes.post("/register", async (req, res) => {
 
                 const user = new Usermodel({ name, email, "password": hash, age, city });
                 await user.save();
-                
+
                 res.status(201).json({ msg: "User registered successfully!" });
 
             } catch (err) {
@@ -92,9 +93,9 @@ userRoutes.post("/register", async (req, res) => {
                 res.status(500).json({ msg: "Internal server error.", error: err.message });
             }
         });
-        
+
     } catch (err) {
-        
+
         res.status(500).json({ msg: "Internal server error.", error: err.message });
     }
 });
@@ -155,11 +156,11 @@ userRoutes.post("/register", async (req, res) => {
 userRoutes.post("/login", async (req, res) => {
     // Finding the user with email
     const { email, password } = req.body;
-    
+    console.log(email, password)
     if (!email || !password) {
-        return res.status(400).json({ msg: "All fields are required: Email, Password" });
+        return res.status(400).json({ msg: "All fields are required: email, password" });
     }
-    
+
 
     try {
         const user = await Usermodel.findOne({ email });
@@ -370,10 +371,10 @@ userRoutes.get("/auth/github", async (req, res, next) => {
 
         console.log(email)  //have to generate jwt using that email and send it as response ..... so that user can use that token to auth for next time ......... 
 
-        var token = jwt.sign({email}, process.env.jwtSecretKey);
-       
-        res.status(401).json({token}) //if client will use this token for auth .. they will have acess to protect route as well ...without regestering as well 
-        
+        var token = jwt.sign({ email }, process.env.jwtSecretKey);
+
+        res.status(401).json({ token }) //if client will use this token for auth .. they will have acess to protect route as well ...without regestering as well 
+
     } catch (err) {
         res.status(400).json({ "msg": err })
     }
