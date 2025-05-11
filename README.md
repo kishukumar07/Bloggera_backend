@@ -1,188 +1,96 @@
+# Blog Application Backend
 
-# 📝 Blog Application
+A RESTful API backend for a blog application built with Node.js, Express, and MongoDB.
 
-A full-featured **Blogging Platform** backend built with **Node.js** and **Express.js**, supporting blog post creation, editing, deletion, and user authentication with JWT.
+## Features
 
----
+- User authentication (JWT)
+- OAuth 2.0 with GitHub
+- Blog post CRUD operations
+- Token refresh mechanism
+- Swagger API documentation
+- Protected routes with middleware
 
-## 🌐 API Base URL
+## Tech Stack
 
-```
-http://localhost:4500
-```
+- Node.js
+- Express.js
+- MongoDB
+- JWT (JSON Web Tokens)
+- Swagger/OpenAPI
+- Bcrypt for password hashing
 
----
+## API Documentation
 
-## 📚 Features
+Access the API documentation at: `http://localhost:4500/api-docs`
 
-* **User Authentication**
+## Getting Started
 
-  * Register a new user
-  * Login user and receive JWT tokens
-  * Refresh access tokens
-  * Logout and invalidate tokens
+### Prerequisites
 
-* **Blog Management**
+- Node.js (v14 or higher)
+- MongoDB
+- Git
 
-  * Create a blog post
-  * Fetch all blog posts
-  * Update your own blog posts
-  * Delete your own blog posts
+### Installation
 
----
-
-## 🔑 Authentication
-
-* JWT Access Token required for:
-
-  * Creating blogs
-  * Updating blogs
-  * Deleting blogs
-* Refresh tokens are used to generate new access tokens.
-
----
-
-## 📦 API Endpoints
-
-### User Routes
-
-| Method | Endpoint         | Description                         |
-| :----: | :--------------- | :---------------------------------- |
-|  POST  | `/user/register` | Register a new user                 |
-|  POST  | `/user/login`    | Login and get access/refresh tokens |
-|  POST  | `/user/logout`   | Logout user (blacklist token)       |
-|  POST  | `/user/refresh`  | Refresh access token using reftoken |
-
----
-
-### Blog Routes
-
-| Method | Endpoint               | Description                      |
-| :----: | :--------------------- | :------------------------------- |
-|  POST  | `/blog/create`         | Create a new blog post           |
-|   GET  | `/blog`                | Fetch all blog posts             |
-|  PATCH | `/blog/update/:blogID` | Update a blog post (Author only) |
-| DELETE | `/blog/delete/:blogID` | Delete a blog post (Author only) |
-
----
-
-## 🛠️ Request/Response Example
-
-### 1. Register a User
-
-**POST** `/user/register`
-
-```json
-{
-  "name": "John Doe",
-  "email": "john@example.com",
-  "password": "password123",
-  "age": 25,
-  "city": "New York"
-}
-```
-
-### 2. Login User
-
-**POST** `/user/login`
-
-```json
-{
-  "email": "john@example.com",
-  "password": "password123"
-}
-```
-
-**Response:**
-
-```json
-{
-  "msg": "Login Successful",
-  "token": "ACCESS_TOKEN",
-  "reftoken": "REFRESH_TOKEN"
-}
-```
-
----
-
-### 3. Create Blog
-
-**POST** `/blog/create`
-
-```json
-{
-  "title": "The Future of Web Development",
-  "content": "Web development trends like AI, Web3, serverless are emerging rapidly...",
-  "category": "Technology"
-}
-```
-
----
-
-### 4. Update Blog
-
-**PATCH** `/blog/update/:blogID`
-
-```json
-{
-  "title": "Updated Title",
-  "content": "Updated content...",
-  "category": "Updated Category"
-}
-```
-
----
-
-### 5. Delete Blog
-
-**DELETE** `/blog/delete/:blogID`
-
----
-
-## ⚠️ Error Responses
-
-* `400` Bad Request (Missing fields)
-* `401` Unauthorized (Invalid or missing token)
-* `403` Forbidden (Not authorized to update/delete)
-* `404` Blog Not Found
-* `409` Conflict (User already exists)
-* `500` Internal Server Error
-
----
-
-## 📄 Tech Stack
-
-* **Node.js**
-* **Express.js**
-* **MongoDB** (assumed, since typical in such apps)
-* **JWT Authentication**
-* **REST API standards**
-
----
-
-## 🚀 How to Run
-
+1. Clone the repository
 ```bash
-git clone <your-repository-url>
-cd your-project
+git clone <repository-url>
+cd Blog_Client_Backend
+```
+
+2. Install dependencies
+```bash
 npm install
+```
+
+3. Create a `.env` file in the root directory:
+```env
+PORT=4500
+URL="mongodb://127.0.0.1:27017/blogAppdb"
+jwtSecretKey="your-secret-key"
+REF_SECRET="your-refresh-secret"
+CLIENT_ID="your-github-client-id"
+CLIENT_SECRET="your-github-client-secret"
+```
+
+4. Start the server
+```bash
 npm start
 ```
 
----
+## API Endpoints
 
-## 🙌 Contribution
+### Users
+- POST `/user/register` - Register new user
+- POST `/user/login` - User login
+- POST `/user/logout` - User logout
+- POST `/user/refresh` - Refresh access token
+- GET `/user/auth/github` - GitHub OAuth login
 
-Feel free to fork this project, raise issues, and submit PRs!
-Let's build better apps together.
+### Blogs
+- GET `/blog` - Get all blogs
+- POST `/blog/create` - Create new blog
+- PATCH `/blog/update/:blogID` - Update blog
+- DELETE `/blog/delete/:blogID` - Delete blog
 
----
+## Authentication
 
-## 🧑‍💻 Author
+The API uses JWT for authentication. Protected routes require a valid Bearer token:
 
-* \[Your Name Here]
+```http
+Authorization: <your-jwt-token>
+```
 
----
+## Contributing
 
-Would you also like me to create a short version too, in case you want a **lightweight** `README.md`? 🚀
-(You could keep one long and one short version depending on where you use it!)
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License
