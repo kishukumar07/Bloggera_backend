@@ -161,7 +161,7 @@ userRoutes.post("/register", async (req, res) => {
 userRoutes.post("/login", async (req, res) => {
   // Finding the user with email
   const { email, password } = req.body;
-  console.log(email, password);
+  // console.log(email, password);
   if (!email || !password) {
     return res.status(400).json({
       success: false,
