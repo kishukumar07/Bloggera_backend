@@ -200,7 +200,7 @@ userRoutes.post("/login", async (req, res) => {
       const token = jwt.sign(
         { authorID: user._id, author: user.name },
         process.env.jwtSecretKey,
-        { expiresIn: "1h" }
+        { expiresIn: "24h" }
       );
 
       // Create refresh token
@@ -208,7 +208,7 @@ userRoutes.post("/login", async (req, res) => {
         { authorID: user._id, author: user.name },
         process.env.REF_SECRET,
         {
-          expiresIn: "7h",
+          expiresIn: "72h",
         }
       );
 
