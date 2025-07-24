@@ -1,4 +1,4 @@
-import { Router, Router } from "express";
+import { Router } from "express";
 import { getAll, sendMsg } from "../controllers/contact.controller.js";
 
 const router = Router();
@@ -8,3 +8,5 @@ router.post("/", sendMsg);
 
 //getting all contactMsg from db ..
 router.get("/", getAll); //this is for admin ..
+
+export default router;
