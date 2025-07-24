@@ -6,7 +6,7 @@ import {
   getAll,
   updateBlog,
   deleteBlog,
-} from "../controllers/blog.controller";
+} from "../controllers/blog.controller.js";
 
 const blogRoutes = Router();
 

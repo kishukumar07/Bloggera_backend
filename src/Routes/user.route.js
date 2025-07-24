@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-const route = Router();
+const userRoutes = Router();
 
 import {
   register,
@@ -8,10 +8,10 @@ import {
   logout,
   refresh,
   githubOauth,
-} from "../controllers/user.controller";
+} from "../controllers/user.controller.js";
 
 //register
-route.post("/register", register);
+userRoutes.post("/register", register);
 
 //login
 userRoutes.post("/login", login);
@@ -25,4 +25,4 @@ userRoutes.post("/refresh", refresh);
 // //redirected to this  after o-auth
 userRoutes.get("/auth/github", githubOauth);
 
-export default route;
+export default userRoutes;

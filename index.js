@@ -4,15 +4,16 @@ import cors from "cors";
 const app = express();
 dotenv.config();
 
-import { userRoutes } from "./src/Routes/user.route.js";
-import { blogRoutes } from "./src/Routes/blog.route.js";
+import userRoutes from "./src/Routes/user.route.js";
+import blogRoutes from "./src/Routes/blog.route.js";
+import contactRoutes from "./src/Routes/contact.route.js";
 
 import { auth } from "./src/middlewares/auth.js";
-import { connection } from "./src/configs/db.js";
-
-app.use(express.json());
+import { connection } from "./src/configs/db.config.js";
 
 // Middleware to handle JSON parsing errors
+app.use(express.json());
+
 // Custom error handler for invalid JSON input in req.body
 app.use((err, req, res, next) => {
   if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
@@ -20,37 +21,11 @@ app.use((err, req, res, next) => {
       .status(400)
       .json({ error: "Invalid JSON format. Please check your request body." });
   }
-  next(); // Pass to next middleware
+  next();
 });
 
 app.use(cors());
 const port = (process.env.PORT ||= 8000);
-
-// Swagger Configuration
-const swaggerDefinition = {
-  openapi: "3.0.0",
-  info: {
-    title: "Blog API Documentation",
-    version: "1.0.0",
-    description: "API documentation for Blog application",
-  },
-  servers: [
-    {
-      url: `http://localhost:${process.env.PORT || 8000}`,
-      description: "Development server",
-    },
-  ],
-};
-
-const options = {
-  swaggerDefinition,
-  apis: ["./controllers/*.js"], // Point to your route files
-};
-
-const swaggerSpec = swaggerJSDoc(options);
-
-// Swagger UI endpoint
-app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
 app.get("/", (req, res) => {
   res.end("this is your Blog app");
@@ -58,6 +33,7 @@ app.get("/", (req, res) => {
 
 app.use("/user", userRoutes);
 
+app.use("/contact", contactRoutes);
 //auth middle ware
 app.use(auth);
 
