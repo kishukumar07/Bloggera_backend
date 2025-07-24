@@ -3,14 +3,12 @@ import dotenv from "dotenv";
 import cors from "cors";
 const app = express();
 dotenv.config();
-import { userRoutes } from "./src/controllers/user.js";
-import { blogRoutes } from "./src/controllers/blog.js";
+
+import { userRoutes } from "./src/Routes/user.route.js";
+import { blogRoutes } from "./src/Routes/blog.route.js";
+
 import { auth } from "./src/middlewares/auth.js";
 import { connection } from "./src/configs/db.js";
-
-// //for swagger purpose
-import swaggerJSDoc from "swagger-jsdoc";
-import swaggerUI from "swagger-ui-express";
 
 app.use(express.json());
 
