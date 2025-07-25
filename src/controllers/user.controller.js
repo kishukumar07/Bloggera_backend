@@ -125,10 +125,10 @@ const logout = async (req, res) => {
     const token = req.headers.authorization;
     const BlacklistedToken = new BlacklistModel({ token });
     await BlacklistedToken.save();
-    res.status(200).send("Logged out successfully");
+    res.status(200).json({success:true,  msg: "Logged out successfully"})
   } catch (err) {
     console.error(err);
-    res.status(500).send("Server error");
+    res.status(500).json({success:false,msg: "Server error"})
   }
 };
 
@@ -139,7 +139,7 @@ const refresh = async (req, res) => {
   try {
     const decoded = jwt.verify(refreshToken, process.env.REF_SECRET); //decoding the reftoken
 
-    authorID = decoded.authorID;
+   const authorID = decoded.authorID;
 
     const user = await Usermodel.findOne({ authorID });
     if (!user) return res.status(401).send("Unauthorized login Again");
@@ -199,3 +199,13 @@ const githubOauth = async (req, res, next) => {
 };
 
 export { register, login, logout, refresh, githubOauth };
+
+
+
+
+
+
+
+
+
+
