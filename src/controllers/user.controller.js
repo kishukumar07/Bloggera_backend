@@ -122,13 +122,13 @@ const login = async (req, res) => {
 //Logout user and blacklist token
 const logout = async (req, res) => {
   try {
-    const token = req.headers.authorization;
+    const token = req.headers.authorization.trim().split(" ")[1];
     const BlacklistedToken = new BlacklistModel({ token });
     await BlacklistedToken.save();
-    res.status(200).json({success:true,  msg: "Logged out successfully"})
+    res.status(200).json({ success: true, msg: "Logged out successfully" });
   } catch (err) {
     console.error(err);
-    res.status(500).json({success:false,msg: "Server error"})
+    res.status(500).json({ success: false, msg: "Server error" });
   }
 };
 
@@ -139,7 +139,7 @@ const refresh = async (req, res) => {
   try {
     const decoded = jwt.verify(refreshToken, process.env.REF_SECRET); //decoding the reftoken
 
-   const authorID = decoded.authorID;
+    const authorID = decoded.authorID;
 
     const user = await Usermodel.findOne({ authorID });
     if (!user) return res.status(401).send("Unauthorized login Again");
@@ -157,7 +157,7 @@ const refresh = async (req, res) => {
   }
 };
 
-// //redirected to this  after o-auth
+//redirected to this  after o-auth
 const githubOauth = async (req, res, next) => {
   try {
     const { code } = req.query;
@@ -199,13 +199,3 @@ const githubOauth = async (req, res, next) => {
 };
 
 export { register, login, logout, refresh, githubOauth };
-
-
-
-
-
-
-
-
-
-
