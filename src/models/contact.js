@@ -12,7 +12,6 @@ const contactMsgSchema = new mongoose.Schema({
   message: {
     type: String,
     required: true,
-    trim: true,
   },
 });
 
