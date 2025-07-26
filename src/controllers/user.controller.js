@@ -192,7 +192,7 @@ const githubOauth = async (req, res, next) => {
 
     var token = jwt.sign({ email }, process.env.jwtSecretKey);
 
-    res.redirect(`http://localhost:3000/dashboard?token=${token}`);
+    res.redirect(`http://localhost:3000/?token=${token}`);
   } catch (err) {
     res.status(400).json({ msg: err });
   }
