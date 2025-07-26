@@ -158,12 +158,11 @@ const refresh = async (req, res) => {
 };
 
 //redirected to this  after o-auth
-const githubOauth = async (req, res, next) => {
+const githubOauth = async (req, res) => {
   try {
     const { code } = req.query;
-    // console.log("OAuth Code:", code);
 
-    //step2
+    // Step 1: Exchange code for access token
     const {
       data: { access_token },
     } = await axios.post(
@@ -174,27 +173,74 @@ const githubOauth = async (req, res, next) => {
         code,
       },
       {
-        headers: { Accept: "application/json" },
+        headers: {
+          Accept: "application/json",
+        },
       }
     );
 
-    //step3.
-    const { data } = await axios.get("https://api.github.com/user/emails", {
+    // Step 2: Get GitHub profile (name, username, avatar)
+    const { data: userData } = await axios.get("https://api.github.com/user", {
       headers: {
         Authorization: `Bearer ${access_token}`,
       },
     });
 
-    // Extract first email (assuming the first one is the primary email)
-    const email = data.length > 0 ? data[0].email : null;
+    const name = userData.name || userData.login; // fallback to username if name is null
 
-    console.log(email); //have to generate jwt using that email and send it as response ..... so that user can use that token to auth for next time .........
+    // Step 3: Get user's verified primary email
+    const { data: emailData } = await axios.get(
+      "https://api.github.com/user/emails",
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
 
-    var token = jwt.sign({ email }, process.env.jwtSecretKey);
+    const primaryEmailObj = emailData.find(
+      (email) => email.primary && email.verified
+    );
+    const email = primaryEmailObj?.email;
 
-    res.redirect(`http://localhost:3000/?token=${token}`);
+    if (!email)
+      return res.status(400).json({ msg: "Email not found or not verified." });
+
+    console.log("GitHub email:", email);
+    console.log("GitHub name:", name);
+
+    // Step 4: Check if user exists
+    let user = await Usermodel.findOne({ email });
+
+    if (user) {
+      // User exists – create token with credentials
+      const token = jwt.sign(
+        { authorID: user._id, author: user.name },
+        process.env.jwtSecretKey,
+        { expiresIn: "24h" }
+      );
+
+      return res.redirect(
+        `https://bloggera-frontend.vercel.app/?token=${token}`
+      );
+    } else {
+      // User doesn't exist – create user
+      user = new Usermodel({ name, email }); // No password for GitHub users
+      await user.save();
+
+      const token = jwt.sign(
+        { authorID: user._id, author: user.name },
+        process.env.jwtSecretKey,
+        { expiresIn: "24h" }
+      );
+
+      return res.redirect(
+        `https://bloggera-frontend.vercel.app/?token=${token}`
+      );
+    }
   } catch (err) {
-    res.status(400).json({ msg: err });
+    console.error(err);
+    res.status(500).json({ msg: "GitHub OAuth failed", error: err.message });
   }
 };
 
