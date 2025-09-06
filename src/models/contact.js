@@ -14,7 +14,15 @@ const contactMsgSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+
+    //status purpose
+    status: {
+      type:String,
+      enum: ["new", "in progress", "resolved"],
+      default: "new",
+    },
   },
+
   {
     versionKey: false,
     timestamps: true,

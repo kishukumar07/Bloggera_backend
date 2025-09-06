@@ -7,6 +7,7 @@ dotenv.config();
 import userRoutes from "./src/Routes/user.route.js";
 import blogRoutes from "./src/Routes/blog.route.js";
 import contactRoutes from "./src/Routes/contact.route.js";
+import adminroute from "./src/Routes/admin.route.js";
 
 import { auth } from "./src/middlewares/auth.js";
 import { connection } from "./src/configs/db.config.js";
@@ -34,8 +35,10 @@ app.get("/", (req, res) => {
 app.use("/user", userRoutes);
 
 app.use("/contact", contactRoutes);
-//auth middle ware
-app.use(auth);
+//auth middle ware  -need to be modified by route
+// app.use(auth);
+
+app.use("/admin", adminroute);
 
 app.use("/blog", blogRoutes);
 

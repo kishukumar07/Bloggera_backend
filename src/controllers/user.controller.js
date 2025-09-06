@@ -58,6 +58,7 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   // Finding the user with email
+  // console.log(req.body)
   const { email, password } = req.body;
   // console.log(email, password);
   if (!email || !password) {
@@ -69,7 +70,13 @@ const login = async (req, res) => {
 
   try {
     const user = await Usermodel.findOne({ email });
-
+console.log(user.role !== "user" )
+    if (user.role != "user") {
+      return res.status(401).json({
+        success: false,
+        message: "Role Unauthorized",
+      });
+    }
     if (!user) {
       return res
         .status(401)
@@ -94,25 +101,25 @@ const login = async (req, res) => {
       }
 
       // Returning response with token
-
+      // console.log(user.role);
       const token = jwt.sign(
-        { authorID: user._id, author: user.name },
+        { authorID: user._id, author: user.name, role: user.role },
         process.env.jwtSecretKey,
         { expiresIn: "24h" }
       );
 
       // Create refresh token
       const reftoken = jwt.sign(
-        { authorID: user._id, author: user.name },
+        { authorID: user._id, author: user.name, role: user.role },
         process.env.REF_SECRET,
         {
           expiresIn: "72h",
         }
       );
 
-      res
+      return res
         .status(200)
-        .json({ success: "true", msg: "Login Sucessful", token, reftoken });
+        .json({ success: "true", msg: "Login Sucessfull", token, reftoken });
     });
   } catch (err) {
     res.status(500).json({ success: false, msg: err.message });
@@ -146,7 +153,7 @@ const refresh = async (req, res) => {
 
     // Generate new access token
     const token = jwt.sign(
-      { authorID: user._id, author: user.name },
+      { authorID: user._id, author: user.name, role: user.role },
       process.env.jwtSecretKey,
       { expiresIn: "1h" }
     );

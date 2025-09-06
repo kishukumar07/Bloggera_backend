@@ -23,6 +23,17 @@ const blogSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+
+    //For Cms
+    status: {
+      type: String,
+      enum: ["pending", "rejected", "fullfilled"],
+      default: "pending",
+    },
+    feedback: {
+      type: String,
+      default: "",
+    },
   },
   {
     versionKey: false,
@@ -62,11 +73,7 @@ export const Blogmodel = mongoose.model("blog", blogSchema);
 //     type: Number,
 //     default: 0,
 // },
-// status: {
-//     type: String,
-//     enum: ['draft', 'published'],
-//     default: 'draft',
-// },
+
 // publishedAt: {
 //     type: Date,
 // },

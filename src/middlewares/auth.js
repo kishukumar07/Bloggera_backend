@@ -27,9 +27,11 @@ export const auth = async (req, res, next) => {
     // console.log(token);
     const decodedToken = jwt.verify(token, process.env.jwtSecretKey);
     // console.log(decodedToken);
+
     //manupulating reqbody for relationship purpose ...
     req.body.authorID = decodedToken.authorID;
     req.body.author = decodedToken.author;
+    req.body.role = decodedToken.role;
 
     next();
   } catch (err) {
@@ -42,11 +44,3 @@ export const auth = async (req, res, next) => {
   }
 };
 
-// GitHub Copilot
-// Key changes made:
-// Changed require statements to import statements
-// Added .js extension to the local import
-// Changed module.exports to export const
-// Removed the variable declaration for auth and directly exported it
-// Changed env.config() to dotenv.config()
-// Make sure your blacklist.js model is also using ES module syntax:

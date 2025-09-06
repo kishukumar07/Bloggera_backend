@@ -3,6 +3,10 @@ import mongoose from "mongoose";
 import { Blogmodel } from "../models/blog.js";
 import { auth } from "../middlewares/auth.js";
 
+
+
+
+
 const blogRoutes = express.Router();
 
 //Function: Saves a new blog post to the database with relationships.
