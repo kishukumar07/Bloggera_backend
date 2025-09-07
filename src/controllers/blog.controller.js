@@ -3,10 +3,6 @@ import mongoose from "mongoose";
 import { Blogmodel } from "../models/blog.js";
 import { auth } from "../middlewares/auth.js";
 
-
-
-
-
 const blogRoutes = express.Router();
 
 //Function: Saves a new blog post to the database with relationships.
@@ -29,18 +25,34 @@ const create = async (req, res) => {
 };
 
 //Function : Retrives all the blpg posts for a specific user who logged in
+//3 more restfull apis for blog-> status based
+//if user can ask separately for their blogs ...based on status
 const myblogs = async (req, res) => {
   const authorID = req.body.authorID;
   //no need for authorization
   try {
-    let blogs = await Blogmodel.find({ authorID }).sort({ createdAt: -1 });
+    const blogs = await Blogmodel.find({ authorID }).sort({ createdAt: -1 });
     // console.log(blogs);
-    res.status(200).json({ success: true, blogs }); // 200 OK for successful response
+    const myResolvedBlogs = await Blogmodel.aggregate([
+      { $match : { authorID: authorID, status: "fullfilled" } },
+    ]);
+    const myRejectedBlogs = await Blogmodel.aggregate([
+      { $match : { authorID: authorID, status: "rejected" } },
+    ]);
+    const myPendingBlogs = await Blogmodel.aggregate([
+      { $match : { authorID: authorID, status: "pending" } },
+    ]);
+    // const myResolvedBlogs
+    // const myRejectedBlogs
+return res
+      .status(200)
+      .json({ success: true, message: "blog fetched successfull", blogs,myResolvedBlogs,myRejectedBlogs, myPendingBlogs }); // 200 OK for successful response
   } catch (err) {
     console.log(err.msg);
     res.status(500).json({ success: false, msg: err.message }); // 500
   }
 };
+
 
 //  Function: Retrieves all blog posts while excluding authorID and _id from the response.
 const blogById = async (req, res) => {
@@ -57,16 +69,15 @@ const blogById = async (req, res) => {
   }
 };
 
-//Function getting all blogs
+//Function getting all verified blogs 
 const getAll = async (req, res) => {
-  //no need for authorization
   try {
     let blogs = await Blogmodel.aggregate([
+      { $match: { status: "fullfilled" } }, //for cms purpose  
       { $project: { authorID: 0 } },
       { $sort: { createdAt: -1 } },
     ]);
-    //   ✅ Client can store the _id (65f3b8e4f12a3c00123abcd4) for future updates. but they need to autenticate
-    // console.log(blogs+"ee");
+
     res.status(200).json({ success: true, blogs }); // 200 OK for successful response
   } catch (err) {
     res.status(500).json({ success: false, msg: err.message }); // 500

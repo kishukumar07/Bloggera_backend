@@ -8,6 +8,8 @@ import {
   deleteUser,
   updateURole,
   viewAllBlogs,
+  getPendingBlogs,
+  getRejectedBlogs,
   updatingBlogStatus,
   removeBlog,
   getAllContacts,
@@ -38,6 +40,8 @@ router.patch("/users/:id/role", updateURole);
 // PATCH /blogs/:id/status → approve/reject blog (moderation).
 // DELETE /blogs/:id → remove blog (admin only).
 router.get("/blogs", viewAllBlogs);
+router.get("/blogs/pending", getPendingBlogs);
+router.get("/blogs/rejected", getRejectedBlogs);
 router.patch("/blog/:id/status", updatingBlogStatus);
 router.delete("/blogs/:id", removeBlog);
 

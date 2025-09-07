@@ -191,11 +191,61 @@ const updateURole = async (req, res) => {
 };
 
 //Manage Blogs
+
+//only getiing aproved blogs
 const viewAllBlogs = async (req, res) => {
   try {
     // Get users (hide password and other sensitive fields)
-    const blogs = await Blogmodel.aggregate([{ $sort: { createdAt: 1 } }]);
+    const blogs = await Blogmodel.aggregate([
+      { $match: { status: "fullfilled" } },
+      { $sort: { createdAt: 1 } },
+    ]);
+    // Get total user count using aggregation
+    const countResult = await Usermodel.aggregate([{ $count: "totalblogs" }]);
+    // console.log(countResult);
+    const totalblogs = countResult[0]?.totalblogs || 0;
 
+    res.status(200).json({
+      success: true,
+      totalblogs,
+      blogs,
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+//2 functions more for getting restfull results
+
+const getPendingBlogs = async (req, res) => {
+  try {
+    // Get users (hide password and other sensitive fields)
+    const blogs = await Blogmodel.aggregate([
+      { $match: { status: "pending" } },
+      { $sort: { createdAt: 1 } },
+    ]);
+    // Get total user count using aggregation
+    const countResult = await Usermodel.aggregate([{ $count: "totalblogs" }]);
+    // console.log(countResult);
+    const totalblogs = countResult[0]?.totalblogs || 0;
+
+    res.status(200).json({
+      success: true,
+      totalblogs,
+      blogs,
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+const getRejectedBlogs = async (req, res) => {
+  try {
+    // Get users (hide password and other sensitive fields)
+    const blogs = await Blogmodel.aggregate([
+      { $match: { status: "rejected" } },
+      { $sort: { createdAt: 1 } },
+    ]);
     // Get total user count using aggregation
     const countResult = await Usermodel.aggregate([{ $count: "totalblogs" }]);
     // console.log(countResult);
@@ -212,12 +262,26 @@ const viewAllBlogs = async (req, res) => {
 };
 
 //updating blog cms ...>>
+// PATCH /admin/blogs/:id/status
 const updatingBlogStatus = async (req, res) => {
-  //blog/:id/status
   try {
     const id = req.params.id;
-    if (!id) {
-      return res.status(400).json({ success: false, message: "Bad request" });
+    const { status } = req.body; // new status comes from body
+
+    if (!id || !status) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Blog ID and status are required" });
+    }
+
+    // Allowed statuses
+    const allowedStatuses = ["pending", "rejected", "fullfilled"];
+
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid status. Allowed: ${allowedStatuses.join(", ")}`,
+      });
     }
 
     const blog = await Blogmodel.findById(id);
@@ -225,35 +289,29 @@ const updatingBlogStatus = async (req, res) => {
     if (!blog) {
       return res
         .status(404)
-        .json({ success: false, message: "Blog not Found" });
+        .json({ success: false, message: "Blog not found" });
     }
 
+    // Optional: enforce transition rules
     const currentStatus = blog.status;
 
-    const status = ["pending", "rejected", "fullfilled"];
+    if (currentStatus === "fullfilled" && status !== "fullfilled") {
+      return res.status(400).json({
+        success: false,
+        message: "Approved blogs cannot be reverted",
+      });
+    }
 
-    const toggleStatus = (currentStatus) => {
-      const currentIndex = status.indexOf(currentStatus);
-      const nextIndex = (currentIndex + 1) % status.length;
-      return status[nextIndex];
-    };
-
-    const newStatus = toggleStatus(currentStatus); //this will get next status
-
-    console.log(newStatus);
-
-    const updatedblog = await Blogmodel.findByIdAndUpdate(
+    const updatedBlog = await Blogmodel.findByIdAndUpdate(
       id,
-      {
-        status: newStatus,
-      },
+      { status },
       { new: true, runValidators: true }
     );
 
     return res.status(200).json({
       success: true,
-      message: `blog is now set to ${newStatus}`,
-      updatedblog,
+      message: `Blog status updated to ${status}`,
+      updatedBlog,
     });
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message });
@@ -368,6 +426,8 @@ export {
   deleteUser,
   updateURole,
   viewAllBlogs,
+  getPendingBlogs,
+  getRejectedBlogs,
   updatingBlogStatus,
   removeBlog,
   getAllContacts,
