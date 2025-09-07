@@ -83,7 +83,6 @@ const loginAdmin = async (req, res) => {
 };
 
 //Manage Users
-
 const getAllUsers = async (req, res) => {
   try {
     // Get users (hide password and other sensitive fields)
@@ -191,7 +190,6 @@ const updateURole = async (req, res) => {
 };
 
 //Manage Blogs
-
 //only getiing aproved blogs
 const viewAllBlogs = async (req, res) => {
   try {
@@ -369,34 +367,40 @@ const updatingContactStatus = async (req, res) => {
     const msg = await contactMsgModel.findById(id);
 
     if (!msg) {
-      return res.status(404).json({ success: false, message: "msg not Found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Message not found" });
     }
 
-    const currentStatus = msg.status;
+    const allowedStatuses = ["new", "in progress", "resolved"];
+    const newStatus = req.body.status;
 
-    const status = ["new", "in progress", "resolved"];
+    // Validate new status
+    if (!newStatus || !allowedStatuses.includes(newStatus)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid status selection!",
+      });
+    }
 
-    const toggleStatus = (currentStatus) => {
-      const currentIndex = status.indexOf(currentStatus);
-      const nextIndex = (currentIndex + 1) % status.length;
-      return status[nextIndex];
-    };
-
-    const newStatus = toggleStatus(currentStatus); //this will get next status
-
-    console.log(newStatus);
+    // Only update if status is actually changing
+    if (msg.status === newStatus) {
+      return res.status(200).json({
+        success: true,
+        message: `Status is already '${newStatus}'`,
+        updatedMsg: msg,
+      });
+    }
 
     const updatedMsg = await contactMsgModel.findByIdAndUpdate(
       id,
-      {
-        status: newStatus,
-      },
+      { status: newStatus },
       { new: true, runValidators: true }
     );
 
     return res.status(200).json({
       success: true,
-      message: `Msg is now set to ${newStatus}`,
+      message: `Message status updated to '${newStatus}'`,
       updatedMsg,
     });
   } catch (err) {
@@ -420,6 +424,105 @@ const deleteContact = async (req, res) => {
   }
 };
 
+//Dashboard
+
+const dashboardUser = async (req, res) => {
+  try {
+    const result = await Usermodel.aggregate([
+      {
+        $facet: {
+          totalUsers: [{ $count: "count" }],
+          totalAdmin: [{ $match: { role: "admin" } }, { $count: "count" }],
+          normalUsers: [{ $match: { role: "user" } }, { $count: "count" }],
+        },
+      },
+    ]);
+
+    const data = result[0];
+
+    res.status(200).json({
+      success: true,
+      totalUsers: data.totalUsers[0]?.count || 0,
+      totalAdmin: data.totalAdmin[0]?.count || 0,
+      normalUsers: data.normalUsers[0]?.count || 0,
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+const dashboardContacts = async (req, res) => {
+  try {
+    const result = await Usermodel.aggregate([
+      {
+        $facet: {
+          totalContacts: [{ $count: "count" }],
+          totalnewContacts: [
+            { $match: { status: "new" } },
+            { $count: "count" },
+          ],
+          totalResolvedContacts: [
+            { $match: { status: "resolved" } },
+            { $count: "count" },
+          ],
+          totalPendingContacts: [
+            { $match: { status: "in progress" } },
+            { $count: "count" },
+          ],
+        },
+      },
+    ]);
+
+    const data = result[0];
+
+    res.status(200).json({
+      success: true,
+      totalContacts: data.totalContacts[0]?.count || 0,
+      totalnewContacts: data.totalnewContacts[0]?.count || 0,
+      totalResolvedContacts: data.totalResolvedContacts[0]?.count || 0,
+      totalPendingContacts: data.totalPendingContacts[0]?.count || 0,
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+const dashboardBlog = async (req, res) => {
+  try {
+    const result = await Usermodel.aggregate([
+      {
+        $facet: {
+          totalBlogs: [{ $count: "count" }],
+          totalPendingBlogs: [
+            { $match: { staus: "pending" } },
+            { $count: "count" },
+          ],
+          totalRejectedBlogs: [
+            { $match: { status: "rejected" } },
+            { $count: "count" },
+          ],
+          totalApprovedBlogs: [
+            { $match: { status: "fullfilled" } },
+            { $count: "count" },
+          ],
+        },
+      },
+    ]);
+
+    const data = result[0];
+
+    res.status(200).json({
+      success: true,
+      totalBlogs: data.totalBlogs[0]?.count || 0,
+      totalPendingBlogs: data.totalPendingBlogs[0]?.count || 0,
+      totalRejectedBlogs: data.totalRejectedBlogs[0]?.count || 0,
+      totalApprovedBlogs: data.totalApprovedBlogs[0]?.count || 0,
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
 export {
   loginAdmin,
   getAllUsers,
@@ -434,4 +537,7 @@ export {
   updatingContactStatus,
   deleteContact,
   //    dashboard  further ...
+  dashboardBlog,
+  dashboardContacts,
+  dashboardUser,
 };

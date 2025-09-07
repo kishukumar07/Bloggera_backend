@@ -16,6 +16,9 @@ import {
   updatingContactStatus,
   deleteContact,
   //    dashboard  further ...
+  dashboardBlog,
+  dashboardContacts,
+  dashboardUser,
 } from "../controllers/admin.controller.js";
 
 const router = Router();
@@ -53,10 +56,10 @@ router.get("/contacts", getAllContacts); //this is for admin ..
 router.patch("/contacts/:id/status", updatingContactStatus);
 router.delete("/contacts/:id", deleteContact);
 
-// Dashboard
+// Dashboard -> totalc counts for this
 // GET /dashboard → overview stats (users, blogs, contacts).
-// router.get("/dashboard/users",  dashboard);
-// router.get("/dashboard/blogs",  dashboard);
-// router.get("/dashboard/contacts",  dashboard);
+router.get("/dashboard/users", dashboardUser);
+router.get("/dashboard/blogs", dashboardBlog);
+router.get("/dashboard/contacts", dashboardContacts);
 
 export default router;
