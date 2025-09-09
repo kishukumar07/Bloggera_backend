@@ -29,6 +29,6 @@ userRoutes.post("/logout", auth, authorize(["user", "admin"]), logout);
 // userRoutes.delete("/delete",auth, deleteAccount);
 
 // //redirected to this  after o-auth
-userRoutes.get("/auth/github"), githubOauth);
+userRoutes.get("/auth/github",  githubOauth);
 
 export default userRoutes;
