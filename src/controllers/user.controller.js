@@ -221,8 +221,10 @@ const githubOauth = async (req, res) => {
 
     if (user) {
       // User exists – create token with credentials
+      
+      
       const token = jwt.sign(
-        { authorID: user._id, author: user.name },
+        { authorID: user._id, author: user.name ,role:"user"},
         process.env.jwtSecretKey,
         { expiresIn: "24h" }
       );
@@ -232,11 +234,11 @@ const githubOauth = async (req, res) => {
       );
     } else {
       // User doesn't exist – create user
-      user = new Usermodel({ name, email }); // No password for GitHub users
+      user = new Usermodel({ name, email,role:"user" }); // No password for GitHub users
       await user.save();
 
       const token = jwt.sign(
-        { authorID: user._id, author: user.name },
+        { authorID: user._id, author: user.name,role:"user" },
         process.env.jwtSecretKey,
         { expiresIn: "24h" }
       );
