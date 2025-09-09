@@ -20,15 +20,15 @@ userRoutes.post("/register", register);
 userRoutes.post("/login", login);
 
 //for ref token purpose  -using ref token we;ll generate new acesstoken
-userRoutes.post("/refresh",  refresh);
+userRoutes.post("/refresh", refresh);
 
 //Logout user and blacklist token
-userRoutes.post("/logout", auth, authorize(["user", "admin"]), logout);
+userRoutes.post("/logout", auth, logout);
 
 //featured for user  if they want to delete their account
 // userRoutes.delete("/delete",auth, deleteAccount);
 
 // //redirected to this  after o-auth
-userRoutes.get("/auth/github",  githubOauth);
+userRoutes.get("/auth/github", githubOauth);
 
 export default userRoutes;
