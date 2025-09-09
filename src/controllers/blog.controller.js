@@ -34,25 +34,31 @@ const myblogs = async (req, res) => {
     const blogs = await Blogmodel.find({ authorID }).sort({ createdAt: -1 });
     // console.log(blogs);
     const myResolvedBlogs = await Blogmodel.aggregate([
-      { $match : { authorID: authorID, status: "fullfilled" } },
+      { $match: { authorID: authorID, status: "fullfilled" } },
     ]);
     const myRejectedBlogs = await Blogmodel.aggregate([
-      { $match : { authorID: authorID, status: "rejected" } },
+      { $match: { authorID: authorID, status: "rejected" } },
     ]);
     const myPendingBlogs = await Blogmodel.aggregate([
-      { $match : { authorID: authorID, status: "pending" } },
+      { $match: { authorID: authorID, status: "pending" } },
     ]);
     // const myResolvedBlogs
     // const myRejectedBlogs
-return res
+    return res
       .status(200)
-      .json({ success: true, message: "blog fetched successfull", blogs,myResolvedBlogs,myRejectedBlogs, myPendingBlogs }); // 200 OK for successful response
+      .json({
+        success: true,
+        message: "blog fetched successfull",
+        blogs,
+        myResolvedBlogs,
+        myRejectedBlogs,
+        myPendingBlogs,
+      }); // 200 OK for successful response
   } catch (err) {
     console.log(err.msg);
     res.status(500).json({ success: false, msg: err.message }); // 500
   }
 };
-
 
 //  Function: Retrieves all blog posts while excluding authorID and _id from the response.
 const blogById = async (req, res) => {
@@ -69,11 +75,11 @@ const blogById = async (req, res) => {
   }
 };
 
-//Function getting all verified blogs 
+//Function getting all verified blogs
 const getAll = async (req, res) => {
   try {
     let blogs = await Blogmodel.aggregate([
-      { $match: { status: "fullfilled" } }, //for cms purpose  
+      { $match: { status: "fullfilled" } }, //for cms purpose
       { $project: { authorID: 0 } },
       { $sort: { createdAt: -1 } },
     ]);

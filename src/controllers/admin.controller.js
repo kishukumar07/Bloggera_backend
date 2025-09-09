@@ -10,14 +10,14 @@ import userRoutes from "../Routes/user.route.js";
 const loginAdmin = async (req, res) => {
   try {
     if (!req.body) {
-      return res.status(400).json({ success: false, message: "Bad Input" });
+      return res.status(400).json({ success: false, msg: "Bad Input" });
     }
     const { email, password } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({
         success: false,
-        message: "Please provide the valid credentials",
+        msg: "Please provide the valid credentials",
       });
     }
 
@@ -26,14 +26,14 @@ const loginAdmin = async (req, res) => {
     if (!admin) {
       return res.status(404).json({
         success: false,
-        message: "ADMIN DOESN'T EXIST WITH THIS CREDENTIALS",
+        msg: "ADMIN DOESN'T EXIST WITH THIS CREDENTIALS",
       });
     }
 
     if (admin.role != "admin") {
       return res
         .status(401)
-        .json({ success: false, message: "You are Unauthorized to do this !" });
+        .json({ success: false, msg: "You are Unauthorized to do this !" });
     }
 
     const hashPassword = admin.password;
@@ -71,7 +71,7 @@ const loginAdmin = async (req, res) => {
       //login succed ...
       return res.status(200).json({
         success: true,
-        message: "Loggin Successfull ",
+        msg: "Loggin Successfull ",
         token,
         reftoken,
       });
@@ -87,14 +87,14 @@ const getAllUsers = async (req, res) => {
   try {
     // Get users (hide password and other sensitive fields)
     const users = await Usermodel.aggregate([
-      { $match: { role: "user" } },
+      // { $match: { role: "user" } },
       { $sort: { createdAt: 1 } },
       { $project: { password: 0, __v: 0 } }, // hide password and __v
     ]);
 
     // Get total user count using aggregation
     const countResult = await Usermodel.aggregate([
-      { $match: { role: "user" } },
+      // { $match: { role: "user" } },
       { $count: "totalUsers" },
     ]);
     // console.log(countResult);
@@ -160,7 +160,7 @@ const updateURole = async (req, res) => {
     // get current role from DB
     const currentRole = user.role;
 
-    console.log(currentRole);
+    // console.log(currentRole);
     // validate role
     if (!currentRole || !["user", "admin"].includes(currentRole)) {
       return res.status(400).json({
@@ -168,9 +168,15 @@ const updateURole = async (req, res) => {
         message: "Invalid role in database",
       });
     }
-
     // toggle role (if user → admin, if admin → user)
-    const newRole = currentRole === "user" ? "admin" : "user";
+    const newRole = req.body.newRole;
+    
+    if (currentRole === newRole) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid role in database",
+      });
+    }
 
     // update role
     const updatedUser = await Usermodel.findByIdAndUpdate(
