@@ -201,7 +201,7 @@ const viewAllBlogs = async (req, res) => {
   try {
     // Get users (hide password and other sensitive fields)
     const blogs = await Blogmodel.aggregate([
-      { $match: { status: "fullfilled" } },
+      // { $match: { status: "fullfilled" } },
       { $sort: { createdAt: 1 } },
     ]);
     // Get total user count using aggregation
