@@ -459,7 +459,7 @@ const dashboardUser = async (req, res) => {
 
 const dashboardContacts = async (req, res) => {
   try {
-    const result = await Usermodel.aggregate([
+    const result = await contactMsgModel.aggregate([
       {
         $facet: {
           totalContacts: [{ $count: "count" }],
