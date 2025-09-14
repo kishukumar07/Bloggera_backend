@@ -378,7 +378,7 @@ const updatingContactStatus = async (req, res) => {
         .json({ success: false, message: "Message not found" });
     }
 
-    const allowedStatuses = ["new", "in progress", "resolved"];
+    const allowedStatuses = [ "pending", "resolved"];
     const newStatus = req.body.status;
 
     // Validate new status

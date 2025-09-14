@@ -18,8 +18,8 @@ const contactMsgSchema = new mongoose.Schema(
     //status purpose
     status: {
       type:String,
-      enum: ["new", "in progress", "resolved"],
-      default: "new",
+      enum: [ "pending", "resolved"],
+      default: "pending",
     },
   },
 
