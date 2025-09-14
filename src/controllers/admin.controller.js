@@ -495,12 +495,12 @@ const dashboardContacts = async (req, res) => {
 
 const dashboardBlog = async (req, res) => {
   try {
-    const result = await Usermodel.aggregate([
+    const result = await Blogmodel.aggregate([
       {
         $facet: {
           totalBlogs: [{ $count: "count" }],
           totalPendingBlogs: [
-            { $match: { staus: "pending" } },
+            { $match: { status: "pending" } },
             { $count: "count" },
           ],
           totalRejectedBlogs: [
@@ -516,7 +516,7 @@ const dashboardBlog = async (req, res) => {
     ]);
 
     const data = result[0];
-
+// console.log(data); 
     res.status(200).json({
       success: true,
       totalBlogs: data.totalBlogs[0]?.count || 0,
