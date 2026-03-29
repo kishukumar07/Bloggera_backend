@@ -4,6 +4,7 @@ import { Blogmodel } from "../models/blog.js";
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import {emailRegEx} from "../utils/validation.js"
 
 //Admin things
 const loginAdmin = async (req, res) => {
@@ -12,6 +13,14 @@ const loginAdmin = async (req, res) => {
       return res.status(400).json({ success: false, msg: "Bad Input" });
     }
     const { email, password } = req.body;
+   
+    if(!emailRegEx.test(email)){
+      return res.status(400).json({
+        success:false, 
+        msg:"Invalid Email Format"
+      })
+    }
+    
 
     if (!email || !password) {
       return res.status(400).json({
