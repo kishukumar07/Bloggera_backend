@@ -6,6 +6,10 @@ dotenv.config();
 
 export const auth = async (req, res, next) => {
   try {
+    if (!req.headers.authorization) {
+      return res.status(401).json({ success: false, msg: "No token provided" });
+    }
+
     const token = req.headers.authorization.trim().split(" ")[1];
 
     if (!token) {
@@ -28,7 +32,7 @@ export const auth = async (req, res, next) => {
     const decodedToken = jwt.verify(token, process.env.jwtSecretKey);
     // console.log(decodedToken);
 
-    //manupulating reqbody for relationship purpose ...
+    //manupulating reqbody for relationship purpose ...(Kya joh logged in kiya hai woh apne data ko manipulate kar rha hai)
     req.body.authorID = decodedToken.authorID;
     req.body.author = decodedToken.author;
     req.body.role = decodedToken.role;
@@ -43,4 +47,3 @@ export const auth = async (req, res, next) => {
     return res.status(403).json({ success: false, msg: err.message });
   }
 };
-

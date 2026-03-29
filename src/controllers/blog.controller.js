@@ -1,9 +1,6 @@
-import express from "express";
 import mongoose from "mongoose";
 import { Blogmodel } from "../models/blog.js";
-import { auth } from "../middlewares/auth.js";
 
-const blogRoutes = express.Router();
 
 //Function: Saves a new blog post to the database with relationships.
 const create = async (req, res) => {
@@ -29,6 +26,7 @@ const create = async (req, res) => {
 //if user can ask separately for their blogs ...based on status
 const myblogs = async (req, res) => {
   const authorID = req.body.authorID;
+  
   //no need for authorization
   try {
     const blogs = await Blogmodel.find({ authorID }).sort({ createdAt: -1 });
@@ -63,6 +61,14 @@ const myblogs = async (req, res) => {
 //  Function: Retrieves all blog posts while excluding authorID and _id from the response.
 const blogById = async (req, res) => {
   const blogId = req.params.blogId;
+  
+  if(!mongoose.Types.ObjectId.isValid(blogId)){
+    return res.status(400).json({
+      success: false, 
+      message : "Bad Request"
+    }); 
+  }
+
   //no need for authorization
   // console.log(req.body);
   try {
@@ -94,6 +100,13 @@ const getAll = async (req, res) => {
 const updateBlog = async (req, res) => {
   try {
     const { blogID } = req.params;
+   if(mongoose.Types.ObjectId.isValid(blogID)){
+    return res.status(400).json({
+      success : false, 
+      message : "Bad Request"
+    })
+   }
+
     const authorID = req.body.authorID; // Authenticated User ID from token
 
     // Find the blog
@@ -120,6 +133,14 @@ const updateBlog = async (req, res) => {
 const deleteBlog = async (req, res) => {
   try {
     const { blogID } = req.params;
+
+    if(!mongoose.Types.ObjectId.isValid(blogID)){
+    return res.status(400).json({
+      success : false, 
+      message : "Bad Request" 
+    }); 
+    }
+
     // console.log(blogID);
     const authorID = req.body.authorID; // Authenticated User ID from token
 

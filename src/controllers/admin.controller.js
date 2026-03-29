@@ -1,11 +1,10 @@
 import { Usermodel } from "../models/user.js";
 import { contactMsgModel } from "../models/contact.js";
 import { Blogmodel } from "../models/blog.js";
-import { BlacklistModel } from "../models/blacklist.js";
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import userRoutes from "../Routes/user.route.js";
+
 //Admin things
 const loginAdmin = async (req, res) => {
   try {
@@ -59,7 +58,6 @@ const loginAdmin = async (req, res) => {
       );
 
       //refresh token ...
-
       const reftoken = jwt.sign(
         { authorID: admin._id, author: admin.name, role: admin.role },
         process.env.REF_SECRET,
@@ -75,7 +73,6 @@ const loginAdmin = async (req, res) => {
         token,
         reftoken,
       });
-      //try catch execution ...
     });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -85,7 +82,7 @@ const loginAdmin = async (req, res) => {
 //Manage Users
 const getAllUsers = async (req, res) => {
   try {
-    // Get users (hide password and other sensitive fields)
+    
     const users = await Usermodel.aggregate([
       // { $match: { role: "user" } },
       { $sort: { createdAt: 1 } },
@@ -94,10 +91,10 @@ const getAllUsers = async (req, res) => {
 
     // Get total user count using aggregation
     const countResult = await Usermodel.aggregate([
-      // { $match: { role: "user" } },
+  
       { $count: "totalUsers" },
     ]);
-    // console.log(countResult);
+   
     const totalUsers = countResult[0]?.totalUsers || 0;
 
     res.status(200).json({
@@ -114,6 +111,13 @@ const getAllUsers = async (req, res) => {
 const deleteUser = async (req, res) => {
   try {
     const id = req.params.id;
+
+   if(!mongoose.Types.ObjectId.isValid(id)){
+    return res.status(400).json({
+      success : false, 
+      message : "bad Request"
+     }); 
+   }
 
     // Find and delete the user
     const deletedUser = await Usermodel.findByIdAndDelete(id);
@@ -160,7 +164,6 @@ const updateURole = async (req, res) => {
     // get current role from DB
     const currentRole = user.role;
 
-    // console.log(currentRole);
     // validate role
     if (!currentRole || !["user", "admin"].includes(currentRole)) {
       return res.status(400).json({
@@ -205,7 +208,7 @@ const viewAllBlogs = async (req, res) => {
       { $sort: { createdAt: 1 } },
     ]);
     // Get total user count using aggregation
-    const countResult = await Usermodel.aggregate([{ $count: "totalblogs" }]);
+    const countResult = await Blogmodel.aggregate([{ $count: "totalblogs" }]);
     // console.log(countResult);
     const totalblogs = countResult[0]?.totalblogs || 0;
 
@@ -229,7 +232,7 @@ const getPendingBlogs = async (req, res) => {
       { $sort: { createdAt: 1 } },
     ]);
     // Get total user count using aggregation
-    const countResult = await Usermodel.aggregate([{ $count: "totalblogs" }]);
+    const countResult = await Blogmodel.aggregate([{ $count: "totalblogs" }]);
     // console.log(countResult);
     const totalblogs = countResult[0]?.totalblogs || 0;
 
@@ -251,7 +254,7 @@ const getRejectedBlogs = async (req, res) => {
       { $sort: { createdAt: 1 } },
     ]);
     // Get total user count using aggregation
-    const countResult = await Usermodel.aggregate([{ $count: "totalblogs" }]);
+    const countResult = await Blogmodel.aggregate([{ $count: "totalblogs" }]);
     // console.log(countResult);
     const totalblogs = countResult[0]?.totalblogs || 0;
 
@@ -270,6 +273,13 @@ const getRejectedBlogs = async (req, res) => {
 const updatingBlogStatus = async (req, res) => {
   try {
     const id = req.params.id;
+    if(!mongoose.Types.ObjectId.isValid(id)){
+      return res.status(400).json({
+        success: false, 
+        message : "Bad Request "
+      })
+    }
+
     const { status } = req.body; // new status comes from body
 
     if (!id || !status) {
@@ -325,8 +335,8 @@ const updatingBlogStatus = async (req, res) => {
 const removeBlog = async (req, res) => {
   try {
     const id = req.params.id;
-    if (!id) {
-      return res.status(400).json({ success: false, msg: "id not provided" });
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ success: false, msg: "Bad Request" });
     }
     const removedBlog = await Blogmodel.findByIdAndDelete(id);
 
@@ -366,8 +376,8 @@ const getAllContacts = async (req, res) => {
 const updatingContactStatus = async (req, res) => {
   try {
     const id = req.params.id;
-    if (!id) {
-      return res.status(400).json({ success: false, message: "Bad request" });
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ success: false, message: "Bad Request" });
     }
 
     const msg = await contactMsgModel.findById(id);
@@ -417,8 +427,8 @@ const updatingContactStatus = async (req, res) => {
 const deleteContact = async (req, res) => {
   try {
     const id = req.params.id;
-    if (!id) {
-      return res.status(400).json({ success: false, msg: "id not provided" });
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ success: false, msg: "Bad Request.." });
     }
     const removedmsg = await contactMsgModel.findByIdAndDelete(id);
 
@@ -461,18 +471,19 @@ const dashboardContacts = async (req, res) => {
   try {
     const result = await contactMsgModel.aggregate([
       {
+        //over coded need to remove one field ... 
         $facet: {
           totalContacts: [{ $count: "count" }],
           totalnewContacts: [
             { $match: { status: "new" } },
             { $count: "count" },
-          ],
+          ], //i have to remove anything else ["pending", "resolved"]
           totalResolvedContacts: [
             { $match: { status: "resolved" } },
             { $count: "count" },
           ],
           totalPendingContacts: [
-            { $match: { status: "in progress" } },
+            { $match: { status: "pending" } },
             { $count: "count" },
           ],
         },

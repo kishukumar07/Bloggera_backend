@@ -1,10 +1,11 @@
-import express from "express";
 import { Usermodel } from "../models/user.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { BlacklistModel } from "../models/blacklist.js";
 import axios from "axios";
+import {emailRegEx} from "../utils/validation.js"; 
+
 
 dotenv.config();
 
@@ -18,7 +19,14 @@ const register = async (req, res) => {
         msg: "All fields are required: Name, Email, Password",
       });
     }
-
+    
+    if(!emailRegEx.test(email)){
+         return res.status(400).json({
+          success :false  , 
+          msg : "invalid Email Format" 
+        })
+    }
+  
     const existingUser = await Usermodel.findOne({ email });
     if (existingUser) {
       return res
@@ -67,28 +75,37 @@ const login = async (req, res) => {
       msg: "All fields are required: email, password",
     });
   }
+  if(!emailRegEx.test(email)){
+    return res.status(400).json({
+      success : false, 
+      msg:"Invalid Email Format "
+    })
+  }
 
   try {
     const user = await Usermodel.findOne({ email });
-console.log(user.role !== "user" )
+      console.log(user.role !== "user" )
+  if(!user){
+    return res.status(401).json({
+      success :false,
+      message: "Wrong Credentials",
+    })
+  }
+
     if (user.role != "user") {
       return res.status(401).json({
         success: false,
         message: "Role Unauthorized",
       });
     }
-    if (!user) {
-      return res
-        .status(401)
-        .json({ success: false, msg: "Wrong credentials." });
-    }
+   
 
     const hashedPassword = user.password;
 
     bcrypt.compare(password, hashedPassword, (err, result) => {
       // Can also use this with await keyword, no need for a callback
       // result == true
-      if (err) {
+      if (err) {  
         return res
           .status(500)
           .json({ success: false, msg: "Internal server error" });
@@ -107,7 +124,7 @@ console.log(user.role !== "user" )
         process.env.jwtSecretKey,
         { expiresIn: "24h" }
       );
-
+    
       // Create refresh token
       const reftoken = jwt.sign(
         { authorID: user._id, author: user.name, role: user.role },
@@ -119,7 +136,7 @@ console.log(user.role !== "user" )
 
       return res
         .status(200)
-        .json({ success: "true", msg: "Login Sucessfull", token, reftoken });
+        .json({ success: true, msg: "Login Sucessfull", token, reftoken });
     });
   } catch (err) {
     res.status(500).json({ success: false, msg: err.message });
@@ -129,6 +146,9 @@ console.log(user.role !== "user" )
 //Logout user and blacklist token
 const logout = async (req, res) => {
   try {
+    if (!req.headers.authorization) {
+       return res.status(400).json({ msg: "Bad Request" });
+        }
     const token = req.headers.authorization.trim().split(" ")[1];
     const BlacklistedToken = new BlacklistModel({ token });
     await BlacklistedToken.save();
@@ -139,7 +159,7 @@ const logout = async (req, res) => {
   }
 };
 
-//for ref token purpose  -using ref token we;ll generate new acesstoken
+//for ref token purpose  - using ref token we;ll generate new acesstoken
 const refresh = async (req, res) => {
   const refreshToken = req.body.reftoken;
   // Verify refresh token
@@ -148,7 +168,7 @@ const refresh = async (req, res) => {
 
     const authorID = decoded.authorID;
 
-    const user = await Usermodel.findOne({ authorID });
+    const user = await Usermodel.findById( authorID );
     if (!user) return res.status(401).send("Unauthorized login Again");
 
     // Generate new access token
