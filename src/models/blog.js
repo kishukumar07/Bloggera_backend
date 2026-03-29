@@ -28,7 +28,7 @@ const blogSchema = mongoose.Schema(
     status: {
       type: String,
       enum: ["pending", "rejected", "fullfilled"],
-      default: "pending",
+      default: "fullfilled",
     },
     feedback: {
       type: String,

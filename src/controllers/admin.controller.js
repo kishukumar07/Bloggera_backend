@@ -291,10 +291,10 @@ const updatingBlogStatus = async (req, res) => {
 
     const { status } = req.body; // new status comes from body
 
-    if (!id || !status) {
+    if (!status) {
       return res
         .status(400)
-        .json({ success: false, message: "Blog ID and status are required" });
+        .json({ success: false, message: "Blog status required from req.body !" });
     }
 
     // Allowed statuses
@@ -316,14 +316,14 @@ const updatingBlogStatus = async (req, res) => {
     }
 
     // Optional: enforce transition rules
-    const currentStatus = blog.status;
+    // const currentStatus = blog.status;
 
-    if (currentStatus === "fullfilled" && status !== "fullfilled") {
-      return res.status(400).json({
-        success: false,
-        message: "Approved blogs cannot be reverted",
-      });
-    }
+    // if (currentStatus === "fullfilled" && status !== "fullfilled") {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "Approved blogs cannot be reverted",
+    //   });
+    // }
 
     const updatedBlog = await Blogmodel.findByIdAndUpdate(
       id,
